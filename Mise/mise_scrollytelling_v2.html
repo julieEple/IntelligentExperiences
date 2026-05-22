@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mise</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#EDEAE2;
+  --bg2:#E5E2DA;
+  --dark:#1A1A18;
+  --muted:#888780;
+  --border:#C8C5BC;
+  --green:#3EC978;
+  --green-dark:#1A6B3A;
+  --white:#F5F2EB;
+}
+html{scroll-behavior:smooth;font-size:16px}
+body{font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue','Segoe UI',sans-serif;background:var(--bg);color:var(--dark);overflow-x:hidden}
+
+/* Fixed elements */
+.fixed-logo{position:fixed;top:28px;left:32px;font-size:15px;font-weight:500;letter-spacing:-.01em;color:var(--dark);z-index:200;mix-blend-mode:multiply}
+.fixed-names{position:fixed;bottom:28px;left:32px;font-size:11px;color:var(--muted);z-index:200;line-height:1.6}
+.fixed-progress{position:fixed;top:0;left:0;height:2px;background:var(--dark);z-index:300;width:0%;transition:width .05s linear}
+
+/* Nav dots */
+.nav-dots{position:fixed;right:28px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:10px;z-index:200}
+.nav-dot{width:5px;height:5px;border-radius:50%;background:var(--border);cursor:pointer;transition:all .3s}
+.nav-dot.active{background:var(--dark);transform:scale(1.5)}
+
+/* Sections */
+.section{position:relative;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:100px 80px}
+
+/* ── HERO ── */
+.hero{background:var(--bg);overflow:hidden}
+.hero-content{max-width:900px;width:100%;position:relative;z-index:2}
+.hero-tag{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:32px;display:flex;align-items:center;gap:10px}
+.hero-tag::before{content:'';display:block;width:20px;height:1px;background:var(--muted)}
+.hero-h1{font-size:clamp(52px,8vw,96px);font-weight:500;line-height:1.0;letter-spacing:-.03em;color:var(--dark)}
+.hero-h1 .dim{color:var(--muted)}
+.hero-sub{font-size:18px;color:var(--muted);margin-top:32px;max-width:440px;line-height:1.6}
+.hero-scroll{position:absolute;bottom:48px;left:0;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:8px}
+.hero-scroll::after{content:'';display:block;width:32px;height:1px;background:var(--muted);animation:line-pulse 2s infinite}
+@keyframes line-pulse{0%,100%{transform:scaleX(1);opacity:1}50%{transform:scaleX(.5);opacity:.4}}
+
+/* Background large text */
+.bg-text{position:absolute;font-size:clamp(120px,22vw,260px);font-weight:500;color:rgba(0,0,0,.04);white-space:nowrap;pointer-events:none;letter-spacing:-.04em;user-select:none;line-height:1}
+
+/* ── STICKY PROBLEM ── */
+.sticky-wrap{position:relative}
+.sticky-panel{position:sticky;top:0;height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.scroll-steps{height:300vh}
+.step-text-wrap{position:absolute;left:80px;max-width:520px;z-index:3}
+.step-text{position:absolute;top:50%;transform:translateY(-50%);opacity:0;transition:opacity .6s ease,transform .6s ease;transform:translateY(calc(-50% + 30px))}
+.step-text.active{opacity:1;transform:translateY(-50%)}
+.step-label{font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.step-label::before{content:'';display:block;width:16px;height:1px;background:var(--muted)}
+.step-h{font-size:clamp(28px,4vw,44px);font-weight:500;line-height:1.2;margin-bottom:16px}
+.step-p{font-size:17px;color:var(--muted);line-height:1.7}
+.step-p strong{color:var(--dark);font-weight:500}
+
+/* Right side illustration area */
+.step-visual{position:absolute;right:80px;width:min(380px,40vw);height:100%;display:flex;align-items:center;justify-content:center}
+
+/* Post-it pile */
+.postit-pile{position:relative;width:280px;height:280px}
+.postit{position:absolute;width:120px;height:110px;display:flex;align-items:center;justify-content:center;font-size:11px;line-height:1.4;padding:12px;font-family:-apple-system,sans-serif;transition:all .8s cubic-bezier(.34,1.56,.64,1)}
+.postit-1{background:#FAEEDA;top:0;left:20px;transform:rotate(-6deg)}
+.postit-2{background:#E1F5EE;top:40px;left:120px;transform:rotate(4deg)}
+.postit-3{background:#FCF0E8;top:120px;left:10px;transform:rotate(2deg)}
+.postit-4{background:#EDE9FF;top:140px;left:130px;transform:rotate(-3deg)}
+.postit-5{background:#FEF3C7;top:60px;left:65px;transform:rotate(-1deg)}
+
+/* ── STATS ── */
+.stats-section{background:var(--dark);flex-direction:column;gap:0;padding:80px}
+.stats-eyebrow{font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:rgba(255,255,255,.3);margin-bottom:48px;align-self:flex-start}
+.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;max-width:960px;width:100%;background:rgba(255,255,255,.08)}
+.stat-cell{background:var(--dark);padding:48px 40px;display:flex;flex-direction:column;gap:12px}
+.stat-n{font-size:clamp(56px,8vw,88px);font-weight:500;line-height:1;letter-spacing:-.03em;color:var(--white)}
+.stat-n .small{font-size:.45em;vertical-align:middle}
+.stat-n .green{color:var(--green)}
+.stat-l{font-size:14px;color:rgba(255,255,255,.45);line-height:1.5;max-width:220px}
+
+/* ── COST ── */
+.cost-section{background:var(--bg2);flex-direction:column;align-items:flex-start;padding:100px 80px}
+.cost-intro{font-size:clamp(32px,5vw,56px);font-weight:500;line-height:1.1;max-width:700px;margin-bottom:64px;letter-spacing:-.02em}
+.cost-cards{display:grid;grid-template-columns:1fr 1fr;gap:2px;max-width:860px;width:100%}
+.cost-card{padding:40px;background:var(--bg);display:flex;flex-direction:column;gap:16px}
+.cost-label{font-size:11px;text-transform:uppercase;letter-spacing:.1em;display:flex;align-items:center;gap:8px}
+.cost-label-staff{color:#BA7517}
+.cost-label-biz{color:#A32D2D}
+.cost-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.cost-p{font-size:17px;color:var(--muted);line-height:1.7}
+.cost-p strong{color:var(--dark);font-weight:500}
+
+/* Guest feel */
+.guest-section{background:var(--dark);min-height:70vh;justify-content:center;flex-direction:column;text-align:center;padding:80px}
+.guest-big{font-size:clamp(36px,6vw,72px);font-weight:500;line-height:1.1;letter-spacing:-.03em;color:var(--white);max-width:800px;margin:0 auto}
+.guest-big em{font-style:normal;color:var(--green)}
+
+/* ── QUOTE ── */
+.quote-section{background:var(--bg);padding:100px 80px}
+.quote-inner{max-width:800px;margin:0 auto}
+.quote-label{font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:32px;display:flex;align-items:center;gap:10px}
+.quote-label::before{content:'';display:block;width:20px;height:1px;background:var(--muted)}
+blockquote{font-size:clamp(22px,3.5vw,34px);font-weight:500;line-height:1.4;letter-spacing:-.01em;color:var(--dark)}
+blockquote em{font-style:normal;color:var(--green)}
+
+/* ── HMW ── */
+.hmw-section{background:var(--bg2);min-height:80vh;flex-direction:column;text-align:center;padding:100px 80px}
+.hmw-label{font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:24px}
+.hmw-q{font-size:clamp(22px,3.8vw,40px);font-weight:500;line-height:1.3;max-width:800px;letter-spacing:-.02em}
+.hmw-arrow{font-size:48px;margin-top:40px;animation:bob 2s ease-in-out infinite;color:var(--muted)}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(8px)}}
+
+/* ── MISE REVEAL ── */
+.mise-section{background:var(--dark);min-height:100vh;flex-direction:column;text-align:center;justify-content:center;padding:80px;overflow:hidden;position:relative}
+.mise-big{font-size:clamp(100px,20vw,220px);font-weight:500;letter-spacing:-.04em;color:var(--white);line-height:.9;position:relative;z-index:2}
+.mise-tagline{font-size:13px;text-transform:uppercase;letter-spacing:.2em;color:rgba(255,255,255,.3);margin-bottom:32px;z-index:2;position:relative}
+.mise-desc{font-size:clamp(16px,2.2vw,20px);color:rgba(255,255,255,.6);line-height:1.7;max-width:640px;margin:32px auto 0;position:relative;z-index:2}
+.mise-desc strong{color:var(--white);font-weight:500}
+.mise-circle{position:absolute;width:600px;height:600px;border-radius:50%;border:1px solid rgba(255,255,255,.05);top:50%;left:50%;transform:translate(-50%,-50%)}
+.mise-circle-2{position:absolute;width:900px;height:900px;border-radius:50%;border:1px solid rgba(255,255,255,.03);top:50%;left:50%;transform:translate(-50%,-50%)}
+
+/* ── LAYER ── */
+.layer-section{background:var(--bg);flex-direction:column;padding:100px 80px;align-items:flex-start}
+.layer-title{font-size:clamp(28px,4.5vw,52px);font-weight:500;line-height:1.1;max-width:640px;margin-bottom:64px;letter-spacing:-.02em}
+.layers{display:flex;flex-direction:column;gap:3px;max-width:760px;width:100%}
+.layer{display:grid;grid-template-columns:1fr auto;gap:24px;align-items:center;padding:22px 28px;transition:background .3s}
+.layer-existing{background:var(--bg2)}
+.layer-mise{background:var(--dark);border-radius:0}
+.layer-people{background:var(--bg2)}
+.layer-name{font-size:16px;font-weight:500}
+.layer-name-white{font-size:16px;font-weight:500;color:var(--white)}
+.layer-detail{font-size:12px;color:var(--muted);text-align:right;line-height:1.5;max-width:260px}
+.layer-detail-white{font-size:12px;color:rgba(255,255,255,.5);text-align:right;line-height:1.5;max-width:260px}
+.connector{text-align:center;font-size:11px;color:var(--border);padding:4px 0;letter-spacing:.05em}
+
+/* ── PHONE + FEATURES ── */
+.features-wrap{position:relative}
+.features-sticky{position:sticky;top:0;height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden;background:var(--bg2)}
+.features-scroll{height:500vh}
+.features-left{position:absolute;left:80px;top:50%;transform:translateY(-50%);width:380px}
+.features-right{position:absolute;right:100px;top:50%;transform:translateY(-50%)}
+.feature-item{position:absolute;top:0;opacity:0;transition:opacity .5s ease,transform .5s ease;transform:translateY(20px);pointer-events:none}
+.feature-item.active{opacity:1;transform:translateY(0);pointer-events:auto}
+.feature-num{font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.feature-num::before{content:'';display:block;width:16px;height:1px;background:var(--muted)}
+.feature-h{font-size:clamp(28px,4vw,44px);font-weight:500;line-height:1.15;letter-spacing:-.02em;margin-bottom:16px}
+.feature-p{font-size:16px;color:var(--muted);line-height:1.7;max-width:360px}
+.feature-p strong{color:var(--dark);font-weight:500}
+
+/* Phone mockup */
+.phone-shell{width:240px;height:490px;border-radius:36px;border:7px solid #2c2c2a;background:#f5f2eb;overflow:hidden;position:relative;box-shadow:0 40px 80px rgba(0,0,0,.15)}
+.phone-notch{height:24px;background:#1a1a18;display:flex;align-items:center;justify-content:space-between;padding:0 16px}
+.phone-time{font-size:9px;color:#f5f2eb;font-weight:500}
+.phone-screen{background:#F5F0E8;height:calc(100% - 24px);overflow:hidden;position:relative}
+.phone-screen-inner{position:absolute;top:0;left:0;right:0;transition:transform .6s cubic-bezier(.4,0,.2,1)}
+
+/* Screen 1 — task overview */
+.ps-header{background:#1a1a18;padding:14px 14px 12px}
+.ps-greeting{font-size:10px;font-weight:500;color:#f1efe8;margin-bottom:2px}
+.ps-role{font-size:8px;color:#888780}
+.ps-task{background:#fff;border-radius:10px;margin:10px;padding:10px;border:0.5px solid #d3d1c7}
+.ps-task-urgent{border-left:3px solid #E24B4A}
+.ps-task-normal{border-left:3px solid #1D9E75}
+.ps-task-label{font-size:7px;text-transform:uppercase;letter-spacing:.05em;color:#888780;margin-bottom:4px}
+.ps-task-title{font-size:10px;font-weight:500;color:#1a1a18;margin-bottom:2px;line-height:1.3}
+.ps-task-guest{font-size:8px;color:#888780}
+
+/* Screen 2 — guest profile */
+.ps-hero{background:#1a1a18;padding:14px}
+.ps-av{width:32px;height:32px;border-radius:50%;background:#EF9F27;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;color:#fff;margin-bottom:8px}
+.ps-name{font-size:12px;font-weight:500;color:#f1efe8}
+.ps-sub{font-size:8px;color:#888780;margin-top:2px}
+.ps-row{display:flex;justify-content:space-between;padding:5px 14px;border-bottom:0.5px solid #f1efe8;font-size:9px}
+.ps-key{color:#888780}
+.ps-val{color:#1a1a18;font-weight:500}
+.ps-tag-wrap{display:flex;gap:4px;flex-wrap:wrap;padding:8px 14px}
+.ps-tag{font-size:7px;padding:2px 5px;border-radius:4px;font-weight:500}
+
+/* Screen 3 — handover */
+.ps-ho-head{background:#1a1a18;padding:14px}
+.ps-ho-title{font-size:12px;font-weight:500;color:#f1efe8;margin-bottom:2px}
+.ps-ho-sub{font-size:8px;color:#888780}
+.ps-ho-pill{display:inline-block;background:#e24b4a;border-radius:6px;padding:3px 8px;font-size:8px;color:#fff;font-weight:500;margin-top:6px}
+.ps-ho-section{padding:10px 14px;border-bottom:0.5px solid #e8e4dc}
+.ps-ho-sl{font-size:8px;text-transform:uppercase;letter-spacing:.06em;color:#888780;margin-bottom:5px}
+.ps-ho-item{background:#fff;border-radius:7px;padding:7px 9px;margin-bottom:4px;border:0.5px solid #d3d1c7}
+.ps-ho-it{font-size:9px;font-weight:500;color:#1a1a18;margin-bottom:1px}
+.ps-ho-id{font-size:8px;color:#888780}
+
+/* Screen 4 — manager */
+.ps-mgr-head{padding:14px;display:flex;justify-content:space-between;align-items:flex-start}
+.ps-mgr-title{font-size:12px;font-weight:500;color:#1a1a18;margin-bottom:2px}
+.ps-mgr-sub{font-size:8px;color:#888780}
+.ps-stat-row{display:flex;gap:6px;padding:0 14px 10px}
+.ps-stat{flex:1;background:#fff;border-radius:8px;border:0.5px solid #d3d1c7;padding:8px;text-align:center}
+.ps-stat-n{font-size:14px;font-weight:500;color:#1a1a18}
+.ps-stat-l{font-size:7px;color:#888780;margin-top:1px}
+.ps-task-row{display:flex;align-items:center;gap:6px;padding:7px 14px;border-bottom:0.5px solid #f1efe8}
+.ps-td{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.ps-tt{font-size:9px;font-weight:500;color:#1a1a18;flex:1}
+.ps-ta{font-size:8px;color:#888780}
+.ps-ov{background:#f1efe8;border-radius:5px;padding:2px 6px;font-size:8px;color:#444441}
+
+/* Feature progress dots */
+.feature-dots{display:flex;gap:6px;margin-top:32px}
+.fdot{width:5px;height:5px;border-radius:50%;background:var(--border);transition:all .3s}
+.fdot.active{background:var(--dark);width:20px;border-radius:3px}
+
+/* ── NAME ── */
+.name-section{background:var(--bg);min-height:80vh;flex-direction:column;text-align:center;padding:100px 80px}
+.name-mise{font-size:clamp(40px,8vw,100px);font-weight:500;letter-spacing:-.03em;color:var(--dark);margin-bottom:8px}
+.name-italian{font-size:16px;font-style:italic;color:var(--muted);margin-bottom:40px}
+.name-def{font-size:clamp(18px,2.8vw,28px);font-weight:500;line-height:1.4;max-width:640px;color:var(--dark)}
+.name-def em{font-style:normal;color:var(--green)}
+
+/* ── END ── */
+.end-section{background:var(--dark);min-height:100vh;flex-direction:column;text-align:center;padding:80px;justify-content:center}
+.end-mise{font-size:clamp(80px,16vw,180px);font-weight:500;letter-spacing:-.04em;color:var(--white);line-height:.9}
+.end-tag{font-size:13px;text-transform:uppercase;letter-spacing:.18em;color:rgba(255,255,255,.3);margin-top:24px}
+.end-team{font-size:13px;color:rgba(255,255,255,.2);margin-top:48px;line-height:1.8}
+
+/* Animations */
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .8s ease,transform .8s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+.reveal.d1{transition-delay:.1s}
+.reveal.d2{transition-delay:.2s}
+.reveal.d3{transition-delay:.3s}
+.reveal.d4{transition-delay:.4s}
+.reveal.d5{transition-delay:.5s}
+
+@media(max-width:768px){
+  .section{padding:80px 24px}
+  .cost-cards{grid-template-columns:1fr}
+  .stats-grid{grid-template-columns:1fr 1fr}
+  .stats-grid .stat-cell:last-child{display:none}
+  .step-visual{display:none}
+  .features-left{left:24px;width:calc(100% - 48px)}
+  .features-right{display:none}
+}
+</style>
+</head>
+<body>
+
+<div class="fixed-logo">Mise</div>
+<div class="fixed-names">Nicholas Vos · Elisa Caridi · Ruben Bähler<br>Marianna Lonardi · Julie Alme · SUPSI × Spark Reply</div>
+<div class="fixed-progress" id="prog"></div>
+<div class="nav-dots" id="navDots"></div>
+
+<!-- ── HERO ── -->
+<section class="section hero" id="s0">
+  <div class="bg-text" id="bgText" style="top:10%;right:-5%;opacity:.06">Mise</div>
+  <div class="hero-content">
+    <div class="hero-tag reveal">Designing Intelligent Experiences 2026</div>
+    <h1 class="hero-h1 reveal d1">Hotels run on<br><span class="dim">people,</span><br>not systems.</h1>
+    <p class="hero-sub reveal d2">The systems are there. But they don't work together — and the people fill the gaps.</p>
+  </div>
+  <div class="hero-scroll reveal d3">Scroll</div>
+</section>
+
+<!-- ── STICKY PROBLEM ── -->
+<div class="sticky-wrap" id="stickyWrap">
+  <div class="sticky-panel" id="stickyPanel">
+    <div class="step-text-wrap">
+      <div class="step-text" id="step0">
+        <div class="step-label">The problem</div>
+        <h2 class="step-h">The systems don't talk<br>to each other.</h2>
+        <p class="step-p">PMS, booking platforms, communication tools, housekeeping software — each one is an island. Outdated, disconnected, never designed to work as one.</p>
+      </div>
+      <div class="step-text" id="step1">
+        <div class="step-label">The workaround</div>
+        <h2 class="step-h">So the people<br>fill the gaps.</h2>
+        <p class="step-p"><strong>Memory. Post-its. Spreadsheets.</strong> Physically chasing each other around the hotel to get anything done. Human intelligence is the only thing holding the operation together.</p>
+      </div>
+      <div class="step-text" id="step2">
+        <div class="step-label">The result</div>
+        <h2 class="step-h">Every shift change is a<br>moment knowledge dies.</h2>
+        <p class="step-p">The person who made a promise to a guest is gone. The note is on a Post-it no one will find. The next shift starts from zero.</p>
+      </div>
+    </div>
+    <div class="step-visual">
+      <div class="postit-pile" id="postitPile">
+        <div class="postit postit-1" style="font-size:10px;color:#633806">Early check-in<br>Room 204<br>11am !!!</div>
+        <div class="postit postit-2" style="font-size:10px;color:#085041">Mr Vos — no<br>lactose! Tell<br>kitchen</div>
+        <div class="postit postit-3" style="font-size:10px;color:#4a3b00">Call back<br>Francesca re<br>table 7</div>
+        <div class="postit postit-4" style="font-size:10px;color:#26215C">Window seat<br>confirmed?<br>Ask Nic</div>
+        <div class="postit postit-5" style="font-size:10px;color:#633806">Minibar rm 118<br>before checkout<br>tmr</div>
+      </div>
+    </div>
+  </div>
+  <div class="scroll-steps" id="scrollSteps"></div>
+</div>
+
+<!-- ── STATS ── -->
+<section class="section stats-section" id="s2" style="min-height:auto;padding:80px">
+  <div class="stats-eyebrow reveal">The numbers</div>
+  <div class="stats-grid">
+    <div class="stat-cell reveal d1">
+      <div class="stat-n"><span class="green" id="c1">80</span><span class="small">%</span></div>
+      <div class="stat-l">of interdepartmental communication in hotels is still done manually</div>
+    </div>
+    <div class="stat-cell reveal d2">
+      <div class="stat-n">$<span id="c2">2,500</span></div>
+      <div class="stat-l">average cost per communication breakdown caused by missed handoffs</div>
+    </div>
+    <div class="stat-cell reveal d3">
+      <div class="stat-n"><span id="c3">90</span><span class="small">%</span></div>
+      <div class="stat-l">of hotels have no AI tools in place for operational coordination</div>
+    </div>
+  </div>
+</section>
+
+<!-- ── COST ── -->
+<section class="section cost-section" id="s3">
+  <h2 class="cost-intro reveal">That has a cost<br>on both sides.</h2>
+  <div class="cost-cards">
+    <div class="cost-card reveal d1">
+      <div class="cost-label cost-label-staff"><div class="cost-dot" style="background:#BA7517"></div>For staff</div>
+      <p class="cost-p">Time spent <strong>chasing information, filling gaps,</strong> and holding fragmented systems together is time taken away from guests. That is not why anyone went into hospitality.</p>
+    </div>
+    <div class="cost-card reveal d2">
+      <div class="cost-label cost-label-biz"><div class="cost-dot" style="background:#A32D2D"></div>For the business</div>
+      <p class="cost-p"><strong>Missed promises, repeated errors,</strong> managers pulled into emergencies they should never handle. Every incident is a cost that never makes it onto a dashboard.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── GUEST FEEL ── -->
+<section class="section guest-section" id="s4" style="background:#1a1a18;min-height:70vh">
+  <p class="guest-big reveal">That cost is invisible internally.<br>The guest <em>feels</em> it.</p>
+</section>
+
+<!-- ── QUOTE ── -->
+<section class="section quote-section" id="s5">
+  <div class="quote-inner">
+    <div class="quote-label reveal">What staff actually want</div>
+    <blockquote class="reveal d1">"To stay <em>continuously aligned</em> across shifts, departments, and guest situations — so I can carry out the right task, at the right time, with the right information, without manually chasing updates, people, or priorities."</blockquote>
+  </div>
+</section>
+
+<!-- ── HMW ── -->
+<section class="section hmw-section" id="s6">
+  <div class="hmw-label reveal">Our design question</div>
+  <p class="hmw-q reveal d1">How might we help hospitality staff manage tasks, communication, and the guest experience more efficiently — while preserving the human touch?</p>
+  <div class="hmw-arrow reveal d2">↓</div>
+</section>
+
+<!-- ── MISE REVEAL ── -->
+<section class="section mise-section" id="s7">
+  <div class="mise-circle"></div>
+  <div class="mise-circle-2"></div>
+  <div class="mise-tagline reveal">The answer</div>
+  <div class="mise-big reveal d1">Mise</div>
+  <p class="mise-desc reveal d2">An AI agent that <strong>replaces the Post-its, the memory, and the manual coordination</strong> holding hotel operations together. The intelligent layer between systems and the people who use them.</p>
+</section>
+
+<!-- ── LAYER ── -->
+<section class="section layer-section" id="s8">
+  <h2 class="layer-title reveal">Not replacing existing systems.<br>Sitting above them.</h2>
+  <div class="layers">
+    <div class="layer layer-existing reveal d1">
+      <div><div class="layer-name">Existing systems</div><div style="font-size:12px;color:var(--muted);margin-top:3px">PMS · booking · housekeeping · comms</div></div>
+      <div class="layer-detail">Data lives here</div>
+    </div>
+    <div class="connector reveal d2">↑↓ reads &amp; writes ↑↓</div>
+    <div class="layer layer-mise reveal d2">
+      <div><div class="layer-name-white">Mise — intelligent layer</div><div style="font-size:12px;color:rgba(255,255,255,.4);margin-top:3px">connects · prioritises · routes · remembers</div></div>
+      <div class="layer-detail-white">Intelligence lives here</div>
+    </div>
+    <div class="connector reveal d3">↓ surfaces context ↓</div>
+    <div class="layer layer-people reveal d3">
+      <div><div class="layer-name">Staff &amp; managers</div><div style="font-size:12px;color:var(--muted);margin-top:3px">right task · right person · right moment</div></div>
+      <div class="layer-detail">Action happens here</div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FEATURES (STICKY) ── -->
+<div class="features-wrap" id="featWrap">
+  <div class="features-sticky" id="featSticky">
+
+    <div class="features-left">
+      <div class="feature-item" id="f0">
+        <div class="feature-num">01 — Task management</div>
+        <h2 class="feature-h">Every request,<br>one place.</h2>
+        <p class="feature-p">From any channel — guest messages, staff notes, system alerts. The agent picks it up, classifies it, assigns it, and tracks it. Every task is <strong>connected to a guest,</strong> not just a to-do list.</p>
+        <div class="feature-dots">
+          <div class="fdot active"></div><div class="fdot"></div><div class="fdot"></div><div class="fdot"></div>
+        </div>
+      </div>
+      <div class="feature-item" id="f1">
+        <div class="feature-num">02 — Guest profile</div>
+        <h2 class="feature-h">The operational<br>brain.</h2>
+        <p class="feature-p">Preferences, dietary needs, complaint history, past stays, promises made. Every priority decision the agent makes flows from <strong>who the guest is</strong> and what they need right now.</p>
+        <div class="feature-dots">
+          <div class="fdot"></div><div class="fdot active"></div><div class="fdot"></div><div class="fdot"></div>
+        </div>
+      </div>
+      <div class="feature-item" id="f2">
+        <div class="feature-num">03 — Shift handover</div>
+        <h2 class="feature-h">Knowledge that<br>never leaves.</h2>
+        <p class="feature-p">When a shift ends, the agent automatically briefs the next team. Open tasks, guest situations, promises made. <strong>Nothing is lost</strong> when someone goes home.</p>
+        <div class="feature-dots">
+          <div class="fdot"></div><div class="fdot"></div><div class="fdot active"></div><div class="fdot"></div>
+        </div>
+      </div>
+      <div class="feature-item" id="f3">
+        <div class="feature-num">04 — Managerial control</div>
+        <h2 class="feature-h">Oversight without<br>becoming the bottleneck.</h2>
+        <p class="feature-p">Live task board, workload visibility, override controls. Managers write plain-language instructions that <strong>shape how the agent thinks</strong> — and the agent learns from every decision.</p>
+        <div class="feature-dots">
+          <div class="fdot"></div><div class="fdot"></div><div class="fdot"></div><div class="fdot active"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="features-right">
+      <div class="phone-shell">
+        <div class="phone-notch">
+          <span class="phone-time">9:41</span>
+          <div style="display:flex;gap:3px"><div style="width:4px;height:4px;border-radius:50%;background:#f5f2eb;opacity:.6"></div><div style="width:4px;height:4px;border-radius:50%;background:#f5f2eb;opacity:.6"></div></div>
+        </div>
+        <div class="phone-screen">
+          <div class="phone-screen-inner" id="phoneScreen">
+
+            <!-- Screen 1: Tasks -->
+            <div style="height:466px">
+              <div class="ps-header">
+                <div class="ps-greeting">Good morning, Marianna</div>
+                <div class="ps-role">F&B Coordinator · Il Sereno · 4h 22m left</div>
+              </div>
+              <div style="padding:8px 0">
+                <div style="padding:0 10px;font-size:8px;text-transform:uppercase;letter-spacing:.06em;color:#888780;margin-bottom:5px">Your tasks</div>
+                <div class="ps-task ps-task-urgent" style="margin-bottom:6px">
+                  <div class="ps-task-label">Now · Urgent</div>
+                  <div class="ps-task-title">Allergen-free breakfast tray</div>
+                  <div class="ps-task-guest">Sophie Reyes · Rm 204 · arriving in 35 min · VIP</div>
+                </div>
+                <div class="ps-task ps-task-normal" style="margin-bottom:6px">
+                  <div class="ps-task-label">By 12:30</div>
+                  <div class="ps-task-title">Confirm dinner reservation</div>
+                  <div class="ps-task-guest">Mr. Nicholas Vos · Table 7 · window · for 2</div>
+                </div>
+                <div class="ps-task" style="margin-bottom:6px">
+                  <div class="ps-task-label">Before 21:00</div>
+                  <div class="ps-task-title">Restock minibar · Room 118</div>
+                  <div class="ps-task-guest">Ms. Klein · checkout tomorrow</div>
+                </div>
+                <div style="padding:8px 10px;font-size:8px;text-transform:uppercase;letter-spacing:.06em;color:#888780;margin-top:4px">Team now</div>
+                <div style="display:flex;gap:5px;padding:0 10px">
+                  <div style="background:#fff;border-radius:10px;padding:5px 8px;border:0.5px solid #d3d1c7;display:flex;align-items:center;gap:5px;flex:1">
+                    <div style="width:16px;height:16px;border-radius:50%;background:#e1f5ee;display:flex;align-items:center;justify-content:center;font-size:7px;font-weight:500;color:#085041">NC</div>
+                    <div style="font-size:9px;color:#1a1a18;font-weight:500">Nic</div>
+                    <div style="width:5px;height:5px;border-radius:50%;background:#1D9E75;margin-left:auto"></div>
+                  </div>
+                  <div style="background:#fff;border-radius:10px;padding:5px 8px;border:0.5px solid #d3d1c7;display:flex;align-items:center;gap:5px;flex:1">
+                    <div style="width:16px;height:16px;border-radius:50%;background:#faeeda;display:flex;align-items:center;justify-content:center;font-size:7px;font-weight:500;color:#633806">FR</div>
+                    <div style="font-size:9px;color:#1a1a18;font-weight:500">Franc.</div>
+                    <div style="width:5px;height:5px;border-radius:50%;background:#E24B4A;margin-left:auto"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Screen 2: Guest profile -->
+            <div style="height:466px">
+              <div class="ps-hero">
+                <div class="ps-av">NV</div>
+                <div class="ps-name">Mr. Nicholas Vos</div>
+                <div class="ps-sub">Room 310 · VIP · 4th stay · Checking out Apr 22</div>
+              </div>
+              <div>
+                <div class="ps-row"><span class="ps-key">Nationality</span><span class="ps-val">Dutch · English</span></div>
+                <div class="ps-row"><span class="ps-key">Dietary</span><span class="ps-val" style="color:#a32d2d">Lactose intolerant</span></div>
+                <div class="ps-row"><span class="ps-key">Dining pref.</span><span class="ps-val">Window table, quiet</span></div>
+                <div class="ps-row"><span class="ps-key">Last stay</span><span class="ps-val" style="color:#a32d2d">Slow service flag</span></div>
+                <div class="ps-row"><span class="ps-key">Stays since</span><span class="ps-val" style="color:#085041">2021 · 4 visits</span></div>
+              </div>
+              <div class="ps-tag-wrap">
+                <span class="ps-tag" style="background:#e1f5ee;color:#085041">Returning VIP</span>
+                <span class="ps-tag" style="background:#fcebeb;color:#a32d2d">Lactose</span>
+                <span class="ps-tag" style="background:#faeeda;color:#633806">Complaint on file</span>
+                <span class="ps-tag" style="background:#ede9ff;color:#4c3db5">Email preferred</span>
+              </div>
+              <div style="margin:6px 10px;background:#ede9ff;border-radius:8px;padding:8px 10px;font-size:8px;color:#3c3089;line-height:1.5"><strong>Agent:</strong> Dinner tonight 19:00 · table 7 confirmed. Assign senior server — slow service flag on file.</div>
+            </div>
+
+            <!-- Screen 3: Handover -->
+            <div style="height:466px">
+              <div class="ps-ho-head">
+                <div class="ps-ho-title">Handover</div>
+                <div class="ps-ho-sub">Marianna Lonardi · F&B Coordinator</div>
+                <div class="ps-ho-pill">Shift ends in 1h 08m</div>
+              </div>
+              <div style="background:#ede9ff;padding:8px 12px;display:flex;gap:6px;align-items:flex-start;border-bottom:0.5px solid #c5bef7">
+                <div style="width:5px;height:5px;border-radius:50%;background:#7f77dd;flex-shrink:0;margin-top:3px"></div>
+                <div style="font-size:8px;color:#3c3089;line-height:1.5">3 tasks open, 1 requires attention before you leave. Agent will brief the next shift at 16:00.</div>
+              </div>
+              <div class="ps-ho-section">
+                <div class="ps-ho-sl">Open tasks — carrying forward</div>
+                <div class="ps-ho-item" style="border-left:2px solid #e24b4a">
+                  <div class="ps-ho-it">Confirm lactose-free menu · Mr. Vos</div>
+                  <div class="ps-ho-id" style="color:#a32d2d">Must resolve before 16:00</div>
+                </div>
+                <div class="ps-ho-item">
+                  <div class="ps-ho-it">Restock minibar · Rm 118</div>
+                  <div class="ps-ho-id">Carry to evening shift</div>
+                </div>
+              </div>
+              <div style="margin:8px 10px;background:#fff;border-radius:8px;border:1px dashed #d3d1c7;padding:8px 10px">
+                <div style="font-size:8px;color:#888780;margin-bottom:3px;font-weight:500">Your note to next shift</div>
+                <div style="font-size:8px;color:#b4b2a9;font-style:italic">Add anything the agent might not know...</div>
+              </div>
+            </div>
+
+            <!-- Screen 4: Manager -->
+            <div style="height:466px">
+              <div class="ps-mgr-head">
+                <div>
+                  <div class="ps-mgr-title">Task board</div>
+                  <div class="ps-mgr-sub">All departments · Live</div>
+                </div>
+                <div style="width:5px;height:5px;border-radius:50%;background:#1D9E75;margin-top:4px"></div>
+              </div>
+              <div class="ps-stat-row">
+                <div class="ps-stat"><div class="ps-stat-n" style="color:#e24b4a">3</div><div class="ps-stat-l">Urgent</div></div>
+                <div class="ps-stat"><div class="ps-stat-n" style="color:#EF9F27">5</div><div class="ps-stat-l">In progress</div></div>
+                <div class="ps-stat"><div class="ps-stat-n" style="color:#1D9E75">11</div><div class="ps-stat-l">Done today</div></div>
+              </div>
+              <div>
+                <div class="ps-task-row">
+                  <div class="ps-td" style="background:#e24b4a"></div>
+                  <div class="ps-tt">Lactose-free menu · Mr. Vos</div>
+                  <div class="ps-ta">Marianna</div>
+                  <div class="ps-ov">Override</div>
+                </div>
+                <div class="ps-task-row">
+                  <div class="ps-td" style="background:#e24b4a"></div>
+                  <div class="ps-tt">Room 204 priority clean</div>
+                  <div class="ps-ta">Julie</div>
+                  <div class="ps-ov">Override</div>
+                </div>
+                <div class="ps-task-row">
+                  <div class="ps-td" style="background:#EF9F27"></div>
+                  <div class="ps-tt">Confirm dinner · table 7</div>
+                  <div class="ps-ta">Marianna</div>
+                  <div class="ps-ov">Override</div>
+                </div>
+                <div class="ps-task-row">
+                  <div class="ps-td" style="background:#d3d1c7"></div>
+                  <div class="ps-tt">Minibar restock · Rm 118</div>
+                  <div class="ps-ta">Julie</div>
+                  <div class="ps-ov">Override</div>
+                </div>
+              </div>
+              <div style="margin:8px 10px;background:#ede9ff;border-radius:8px;padding:7px 9px;font-size:8px;color:#3c3089;line-height:1.4"><strong>Agent:</strong> Marianna at 85% load — consider redistributing minibar to Ruben. <span style="text-decoration:underline;cursor:pointer">Reassign →</span></div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <div class="features-scroll" id="featScroll"></div>
+</div>
+
+<!-- ── NAME ── -->
+<section class="section name-section" id="s10">
+  <div class="name-mise reveal">Mise</div>
+  <div class="name-italian reveal d1">mise en place</div>
+  <p class="name-def reveal d2">Everything in its right place<br>before service begins.<br><em>That is the product.</em></p>
+</section>
+
+<!-- ── END ── -->
+<section class="section end-section" id="s11">
+  <div class="end-mise reveal">Mise</div>
+  <div class="end-tag reveal d1">Existing systems. Unified intelligence.</div>
+  <div class="end-team reveal d2">Nicholas Vos · Elisa Caridi · Ruben Bähler · Marianna Lonardi · Julie Alme<br>SUPSI × Spark Reply · Designing Intelligent Experiences 2026</div>
+</section>
+
+<script>
+const prog = document.getElementById('prog');
+const allSections = document.querySelectorAll('section[id]');
+const navDots = document.getElementById('navDots');
+const reveals = document.querySelectorAll('.reveal');
+
+allSections.forEach((s,i) => {
+  const d = document.createElement('div');
+  d.className = 'nav-dot';
+  d.onclick = () => s.scrollIntoView({behavior:'smooth'});
+  navDots.appendChild(d);
+});
+const dots = document.querySelectorAll('.nav-dot');
+
+const revealObs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
+}, {threshold:0.1});
+reveals.forEach(el => revealObs.observe(el));
+
+const secObs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if(e.isIntersecting){
+      const i = Array.from(allSections).indexOf(e.target);
+      if(i>=0) dots.forEach((d,j) => d.classList.toggle('active', j===i));
+    }
+  });
+}, {threshold:0.4});
+allSections.forEach(s => secObs.observe(s));
+
+window.addEventListener('scroll', () => {
+  const sc = window.scrollY;
+  const tot = document.body.scrollHeight - window.innerHeight;
+  prog.style.width = (sc/tot*100) + '%';
+
+  // Parallax bg text
+  const bgText = document.getElementById('bgText');
+  if(bgText) bgText.style.transform = `translateY(${sc*0.3}px)`;
+
+  // Sticky steps
+  const wrap = document.getElementById('stickyWrap');
+  const steps = document.getElementById('scrollSteps');
+  if(wrap && steps){
+    const wr = wrap.getBoundingClientRect();
+    const stepH = steps.scrollHeight / 3;
+    const scrolled = -wr.top;
+    const idx = Math.min(2, Math.max(0, Math.floor(scrolled / stepH)));
+    [0,1,2].forEach(i => {
+      const el = document.getElementById('step'+i);
+      if(el) el.classList.toggle('active', i===idx);
+    });
+    // Animate postits on step 1
+    const pile = document.getElementById('postitPile');
+    if(pile){
+      if(idx >= 1){
+        pile.style.filter = 'blur(0px)';
+        pile.style.opacity = '1';
+      } else {
+        pile.style.filter = 'blur(0px)';
+        pile.style.opacity = '0.6';
+      }
+    }
+  }
+
+  // Features sticky
+  const fw = document.getElementById('featWrap');
+  const fs = document.getElementById('featScroll');
+  if(fw && fs){
+    const fwr = fw.getBoundingClientRect();
+    const featureH = fs.scrollHeight / 4;
+    const fScrolled = -fwr.top;
+    const fIdx = Math.min(3, Math.max(0, Math.floor(fScrolled / featureH)));
+    [0,1,2,3].forEach(i => {
+      const el = document.getElementById('f'+i);
+      if(el) el.classList.toggle('active', i===fIdx);
+    });
+    // Swap phone screen
+    const ps = document.getElementById('phoneScreen');
+    if(ps) ps.style.transform = `translateY(-${fIdx * 466}px)`;
+  }
+}, {passive:true});
+
+// Init first step
+document.getElementById('step0').classList.add('active');
+document.getElementById('f0').classList.add('active');
+</script>
+</body>
+</html>

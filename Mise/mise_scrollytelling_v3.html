@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mise</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#EDEAE2;
+  --bg2:#E5E2DA;
+  --dark:#1A1A18;
+  --muted:#888780;
+  --border:#C8C5BC;
+  --green:#3EC978;
+  --white:#F5F2EB;
+}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue','Segoe UI',sans-serif;background:var(--bg);color:var(--dark);overflow-x:hidden}
+
+.fixed-logo{position:fixed;top:28px;left:32px;font-size:15px;font-weight:500;letter-spacing:-.01em;color:var(--dark);z-index:200}
+.fixed-names{position:fixed;bottom:28px;left:32px;font-size:11px;color:var(--muted);z-index:200;line-height:1.6}
+.fixed-progress{position:fixed;top:0;left:0;height:2px;background:var(--dark);z-index:300;width:0%}
+
+.nav-dots{position:fixed;right:28px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:10px;z-index:200}
+.nav-dot{width:5px;height:5px;border-radius:50%;background:var(--border);cursor:pointer;transition:all .3s}
+.nav-dot.active{background:var(--dark);transform:scale(1.5)}
+
+.section{position:relative;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:100px 80px}
+
+/* HERO */
+.hero{background:var(--bg);overflow:hidden}
+.hero-content{max-width:960px;width:100%}
+.hero-tag{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:32px;display:flex;align-items:center;gap:10px}
+.hero-tag::before{content:'';display:block;width:20px;height:1px;background:var(--muted)}
+.hero-h1{font-size:clamp(52px,8vw,96px);font-weight:500;line-height:1.0;letter-spacing:-.03em;color:var(--dark)}
+.hero-h1 .dim{color:var(--muted)}
+.hero-sub{font-size:18px;color:var(--muted);margin-top:32px;max-width:480px;line-height:1.6}
+.hero-scroll{position:absolute;bottom:48px;left:80px;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:8px}
+.hero-scroll::after{content:'';display:block;width:32px;height:1px;background:var(--muted);animation:lp 2s infinite}
+@keyframes lp{0%,100%{opacity:1;transform:scaleX(1)}50%{opacity:.4;transform:scaleX(.5)}}
+
+.bg-text{position:absolute;font-size:clamp(120px,22vw,260px);font-weight:500;color:rgba(0,0,0,.04);white-space:nowrap;pointer-events:none;letter-spacing:-.04em;user-select:none}
+
+/* STICKY PROBLEM */
+.sticky-wrap{position:relative}
+.sticky-panel{position:sticky;top:0;height:100vh;display:flex;align-items:center;overflow:hidden;background:var(--bg2)}
+.scroll-steps{height:300vh}
+
+.step-content{display:flex;align-items:center;justify-content:space-between;width:100%;max-width:1100px;margin:0 auto;padding:0 80px;gap:60px}
+.step-text-col{width:520px;flex-shrink:0;position:relative;height:300px}
+.step-text{position:absolute;top:0;left:0;opacity:0;transform:translateY(20px);transition:opacity .6s ease,transform .6s ease;pointer-events:none}
+.step-text.active{opacity:1;transform:translateY(0);pointer-events:auto}
+.step-label{font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.step-label::before{content:'';display:block;width:16px;height:1px;background:var(--muted)}
+.step-h{font-size:clamp(28px,4vw,44px);font-weight:500;line-height:1.2;margin-bottom:16px;letter-spacing:-.02em}
+.step-p{font-size:17px;color:var(--muted);line-height:1.7;max-width:480px}
+.step-p strong{color:var(--dark);font-weight:500}
+
+.step-visual-col{flex:1;display:flex;align-items:center;justify-content:center}
+.postit-pile{position:relative;width:300px;height:300px;transition:all .6s ease}
+.postit{position:absolute;width:130px;height:115px;display:flex;align-items:center;justify-content:center;padding:14px;font-size:10.5px;line-height:1.45;transition:all .8s cubic-bezier(.34,1.56,.64,1);border-radius:2px}
+.postit-1{background:#FAEEDA;top:0;left:20px;transform:rotate(-6deg);color:#633806}
+.postit-2{background:#E1F5EE;top:40px;left:140px;transform:rotate(4deg);color:#085041}
+.postit-3{background:#FCF0E8;top:130px;left:10px;transform:rotate(2deg);color:#4a3b00}
+.postit-4{background:#EDE9FF;top:150px;left:145px;transform:rotate(-3deg);color:#26215C}
+.postit-5{background:#FEF3C7;top:65px;left:75px;transform:rotate(-1deg);color:#633806}
+.postit-pile.scattered .postit-1{transform:rotate(-18deg) translate(-30px,-20px)}
+.postit-pile.scattered .postit-2{transform:rotate(14deg) translate(40px,-10px)}
+.postit-pile.scattered .postit-3{transform:rotate(8deg) translate(-20px,30px)}
+.postit-pile.scattered .postit-4{transform:rotate(-12deg) translate(30px,20px)}
+.postit-pile.scattered .postit-5{transform:rotate(20deg) translate(0px,-40px)}
+.postit-pile.fade-out{opacity:0;transform:scale(.9)}
+
+/* STATS */
+.stats-section{background:var(--dark);flex-direction:column;padding:80px}
+.stats-eyebrow{font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:rgba(255,255,255,.3);margin-bottom:48px;align-self:flex-start;display:flex;align-items:center;gap:10px}
+.stats-eyebrow::before{content:'';display:block;width:20px;height:1px;background:rgba(255,255,255,.2)}
+.stats-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;width:100%;max-width:1100px;background:rgba(255,255,255,.06)}
+.stat-cell{background:var(--dark);padding:40px 32px;display:flex;flex-direction:column;gap:10px}
+.stat-n{font-size:clamp(40px,5vw,64px);font-weight:500;line-height:1;letter-spacing:-.03em;color:var(--white)}
+.stat-n .green{color:var(--green)}
+.stat-n .sm{font-size:.45em;vertical-align:middle}
+.stat-l{font-size:13px;color:rgba(255,255,255,.4);line-height:1.5;max-width:180px}
+
+/* COST — seamless continuation from stats */
+.cost-section{background:var(--bg2);flex-direction:column;align-items:flex-start;padding:100px 80px}
+.cost-intro{font-size:clamp(32px,5vw,56px);font-weight:500;line-height:1.1;max-width:760px;margin-bottom:64px;letter-spacing:-.02em}
+.cost-cards{display:grid;grid-template-columns:1fr 1fr;gap:2px;max-width:860px;width:100%}
+.cost-card{padding:40px;background:var(--bg);display:flex;flex-direction:column;gap:16px}
+.cost-label{font-size:11px;text-transform:uppercase;letter-spacing:.1em;display:flex;align-items:center;gap:8px}
+.cost-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.cost-p{font-size:17px;color:var(--muted);line-height:1.7}
+.cost-p strong{color:var(--dark);font-weight:500}
+.cost-connector{font-size:clamp(28px,4vw,44px);font-weight:500;line-height:1.2;max-width:760px;margin-top:48px;letter-spacing:-.02em;color:var(--dark)}
+
+/* QUOTE */
+.quote-section{background:var(--bg);padding:100px 80px}
+.quote-inner{max-width:860px}
+.quote-label{font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:32px;display:flex;align-items:center;gap:10px}
+.quote-label::before{content:'';display:block;width:20px;height:1px;background:var(--muted)}
+blockquote{font-size:clamp(22px,3.5vw,36px);font-weight:500;line-height:1.4;letter-spacing:-.01em;color:var(--dark)}
+blockquote em{font-style:normal;color:var(--green)}
+
+/* HMW */
+.hmw-section{background:var(--bg2);min-height:80vh;flex-direction:column;text-align:center;padding:100px 80px}
+.hmw-label{font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:24px}
+.hmw-q{font-size:clamp(22px,3.8vw,40px);font-weight:500;line-height:1.3;max-width:800px;letter-spacing:-.02em}
+.hmw-arrow{font-size:40px;margin-top:40px;color:var(--muted);animation:bob 2s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(8px)}}
+
+/* MISE REVEAL */
+.mise-section{background:var(--dark);min-height:100vh;flex-direction:column;text-align:center;padding:80px;overflow:hidden;position:relative}
+.mise-big{font-size:clamp(100px,20vw,220px);font-weight:500;letter-spacing:-.04em;color:var(--white);line-height:.9;position:relative;z-index:2}
+.mise-tagline{font-size:13px;text-transform:uppercase;letter-spacing:.2em;color:rgba(255,255,255,.3);margin-bottom:32px;z-index:2;position:relative}
+.mise-desc{font-size:clamp(16px,2vw,20px);color:rgba(255,255,255,.6);line-height:1.7;max-width:640px;margin:32px auto 0;position:relative;z-index:2}
+.mise-desc strong{color:var(--white);font-weight:500}
+.ring{position:absolute;border-radius:50%;border:1px solid rgba(255,255,255,.04);top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none}
+
+/* LAYER */
+.layer-section{background:var(--bg);flex-direction:column;padding:100px 80px;align-items:flex-start}
+.layer-title{font-size:clamp(28px,4.5vw,52px);font-weight:500;line-height:1.1;max-width:640px;margin-bottom:64px;letter-spacing:-.02em}
+.layers{display:flex;flex-direction:column;gap:3px;max-width:780px;width:100%}
+.layer{display:grid;grid-template-columns:1fr auto;gap:24px;align-items:center;padding:22px 28px}
+.layer-existing{background:var(--bg2)}
+.layer-mise{background:var(--dark)}
+.layer-people{background:var(--bg2)}
+.layer-name{font-size:16px;font-weight:500;color:var(--dark)}
+.layer-name-w{font-size:16px;font-weight:500;color:var(--white)}
+.layer-sub{font-size:12px;color:var(--muted);margin-top:3px}
+.layer-sub-w{font-size:12px;color:rgba(255,255,255,.4);margin-top:3px}
+.layer-detail{font-size:12px;color:var(--muted);text-align:right;line-height:1.5;max-width:260px}
+.layer-detail-w{font-size:12px;color:rgba(255,255,255,.4);text-align:right;line-height:1.5;max-width:260px}
+.connector-line{text-align:center;font-size:11px;color:var(--border);padding:4px 0;letter-spacing:.05em}
+
+/* FEATURES STICKY */
+.features-wrap{position:relative}
+.features-sticky{position:sticky;top:0;height:100vh;display:flex;align-items:center;justify-content:center;background:var(--bg2);overflow:hidden}
+.features-scroll{height:625vh}
+.features-left{position:absolute;left:80px;top:50%;transform:translateY(-50%);width:400px}
+.features-right{position:absolute;right:100px;top:50%;transform:translateY(-50%)}
+.feature-item{position:absolute;top:0;opacity:0;transition:opacity .5s,transform .5s;transform:translateY(20px);pointer-events:none}
+.feature-item.active{opacity:1;transform:translateY(0);pointer-events:auto}
+.feature-num{font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.feature-num::before{content:'';display:block;width:16px;height:1px;background:var(--muted)}
+.feature-h{font-size:clamp(28px,4vw,44px);font-weight:500;line-height:1.15;letter-spacing:-.02em;margin-bottom:16px}
+.feature-p{font-size:16px;color:var(--muted);line-height:1.7;max-width:380px}
+.feature-p strong{color:var(--dark);font-weight:500}
+.fdots{display:flex;gap:6px;margin-top:32px}
+.fdot{width:5px;height:5px;border-radius:50%;background:var(--border);transition:all .3s}
+.fdot.active{background:var(--dark);width:20px;border-radius:3px}
+
+/* iPhone 17 Pro Max frame */
+.iphone17{position:relative;width:274px;height:592px;flex-shrink:0}
+.iphone17-frame{
+  position:absolute;inset:0;
+  background:linear-gradient(165deg,#3e3e40 0%,#1c1c1e 25%,#2e2e30 60%,#1c1c1e 100%);
+  border-radius:54px;
+  box-shadow:
+    0 0 0 .5px rgba(255,255,255,.18),
+    0 0 0 2px rgba(6,6,8,.95),
+    0 60px 120px rgba(0,0,0,.45),
+    inset 0 1px 0 rgba(255,255,255,.12),
+    inset 0 -1px 0 rgba(0,0,0,.4);
+}
+/* Left side: action + vol up + vol down */
+.iphone17-frame::before{
+  content:'';position:absolute;
+  left:-3px;top:108px;
+  width:3px;height:30px;
+  background:#2a2a2c;border-radius:2px 0 0 2px;
+  box-shadow:0 50px 0 #2a2a2c,0 94px 0 #2a2a2c,
+    -1px 0 0 rgba(255,255,255,.07),-1px 50px 0 rgba(255,255,255,.07),-1px 94px 0 rgba(255,255,255,.07);
+}
+/* Right side: power */
+.iphone17-frame::after{
+  content:'';position:absolute;
+  right:-3px;top:148px;
+  width:3px;height:68px;
+  background:#2a2a2c;border-radius:0 2px 2px 0;
+  box-shadow:1px 0 0 rgba(255,255,255,.07);
+}
+.iphone17-screen{
+  position:absolute;
+  top:7px;left:7px;right:7px;bottom:7px;
+  background:#000;border-radius:47px;
+  overflow:hidden;
+}
+.dynamic-island{
+  position:absolute;top:12px;left:50%;
+  transform:translateX(-50%);
+  width:112px;height:34px;
+  background:#000;border-radius:20px;
+  z-index:20;
+  box-shadow:0 0 0 1px rgba(255,255,255,.05);
+}
+/* Feature media slots */
+.feature-media{
+  position:absolute;inset:0;
+  opacity:0;transition:opacity .5s ease;
+  pointer-events:none;
+}
+.feature-media.active{opacity:1;pointer-events:auto}
+.feature-media video,.feature-media img{
+  width:100%;height:100%;
+  object-fit:cover;display:block;
+}
+/* Placeholder (replace div.fmedia-placeholder with <img src="yourfile.gif"> when ready) */
+.fmedia-placeholder{
+  width:100%;height:100%;
+  background:#0e0e0e;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  gap:12px;padding:60px 32px;
+}
+.fmph-bar{
+  height:9px;border-radius:5px;
+  background:linear-gradient(90deg,#1e1e1e 25%,#303030 50%,#1e1e1e 75%);
+  background-size:200% 100%;
+  animation:shimmer 1.8s ease-in-out infinite;
+}
+.fmedia-placeholder-label{
+  font-size:10px;letter-spacing:.1em;text-transform:uppercase;
+  color:rgba(255,255,255,.15);margin-top:8px;
+  font-family:-apple-system,sans-serif;
+}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+/* NAME */
+.name-section{background:var(--bg);min-height:80vh;flex-direction:column;text-align:center;padding:100px 80px}
+.name-mise{font-size:clamp(40px,8vw,100px);font-weight:500;letter-spacing:-.03em;color:var(--dark);margin-bottom:8px}
+.name-italian{font-size:16px;font-style:italic;color:var(--muted);margin-bottom:40px}
+.name-def{font-size:clamp(18px,2.8vw,28px);font-weight:500;line-height:1.4;max-width:640px;color:var(--dark)}
+.name-def em{font-style:normal;color:var(--green)}
+
+/* SOURCES */
+.sources-section{background:var(--bg2);min-height:auto;padding:80px;flex-direction:column;align-items:flex-start}
+.sources-title{font-size:12px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:32px;display:flex;align-items:center;gap:10px}
+.sources-title::before{content:'';display:block;width:20px;height:1px;background:var(--muted)}
+.sources-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:2px;width:100%;max-width:1100px;margin-bottom:32px}
+.source-card{background:var(--bg);padding:24px;display:flex;flex-direction:column;gap:8px}
+.source-num{font-size:clamp(32px,4vw,52px);font-weight:500;letter-spacing:-.03em;color:var(--dark);line-height:1}
+.source-num .sm{font-size:.45em;vertical-align:middle}
+.source-desc{font-size:12px;color:var(--muted);line-height:1.5}
+.source-link{font-size:10px;color:var(--muted);text-decoration:none;border-bottom:1px solid var(--border);padding-bottom:1px;word-break:break-all;line-height:1.4;display:block;margin-top:auto}
+.source-link:hover{color:var(--dark);border-color:var(--dark)}
+
+/* END */
+.end-section{background:var(--dark);min-height:100vh;flex-direction:column;text-align:center;padding:80px;justify-content:center}
+.end-mise{font-size:clamp(80px,16vw,180px);font-weight:500;letter-spacing:-.04em;color:var(--white);line-height:.9}
+.end-tag{font-size:13px;text-transform:uppercase;letter-spacing:.18em;color:rgba(255,255,255,.3);margin-top:24px}
+.end-team{font-size:13px;color:rgba(255,255,255,.2);margin-top:48px;line-height:1.8}
+
+/* REVEAL */
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .8s ease,transform .8s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+.reveal.d1{transition-delay:.1s}.reveal.d2{transition-delay:.2s}.reveal.d3{transition-delay:.3s}
+.reveal.d4{transition-delay:.4s}.reveal.d5{transition-delay:.5s}
+
+@media(max-width:900px){
+  .section{padding:80px 24px}
+  .step-content{padding:0 24px;gap:24px}
+  .step-visual-col{display:none}
+  .step-text-col{width:100%}
+  .cost-cards{grid-template-columns:1fr}
+  .stats-grid{grid-template-columns:repeat(2,1fr)}
+  .sources-grid{grid-template-columns:repeat(2,1fr)}
+  .features-right{display:none}
+  .features-left{left:24px;width:calc(100% - 48px)}
+  .layer-section,.cost-section,.sources-section{padding:80px 24px}
+}
+</style>
+</head>
+<body>
+
+<div class="fixed-logo">Mise</div>
+<div class="fixed-names">Nicholas Vos · Elisa Caridi · Ruben Bähler<br>Marianna Lonardi · Julie Alme · SUPSI × Spark Reply</div>
+<div class="fixed-progress" id="prog"></div>
+<div class="nav-dots" id="navDots"></div>
+
+<!-- HERO -->
+<section class="section hero" id="s0">
+  <div class="bg-text" id="bgText" style="top:5%;right:-5%">Mise</div>
+  <div class="hero-content">
+    <div class="hero-tag reveal">Designing Intelligent Experiences 2026</div>
+    <h1 class="hero-h1 reveal d1">Hotels run on<br><span class="dim">people,</span><br>not systems.</h1>
+    <p class="hero-sub reveal d2">Staff, teams, and departments are constantly out of sync — and the only thing holding the operation together is the people themselves.</p>
+  </div>
+  <div class="hero-scroll reveal d3">Scroll</div>
+</section>
+
+<!-- STICKY PROBLEM -->
+<div class="sticky-wrap" id="stickyWrap">
+  <div class="sticky-panel" id="stickyPanel">
+    <div class="step-content">
+      <div class="step-text-col">
+        <div class="step-text" id="step0">
+          <div class="step-label">The alignment problem</div>
+          <h2 class="step-h">Staff, teams, and departments are constantly out of sync.</h2>
+          <p class="step-p">The systems are there — PMS, booking platforms, messaging tools. But they were never built to help people coordinate. The systems are outdated and fragmented — they don't talk to each other, and they were never designed to be sufficient on their own. That leaves staff to work around the systems and fill in the gaps themselves. Right now that means heavy reliance on <strong>memory, Post-its, spreadsheets,</strong> and physically chasing each other and information around the hotel.</p>
+        </div>
+        <div class="step-text" id="step1">
+          <div class="step-label">The real operating system</div>
+          <h2 class="step-h">Memory and paper is the real operating system.</h2>
+          <p class="step-p"><strong>Human intelligence is what keeps the outdated systems running.</strong> The tools don't communicate with each other and aren't sufficient on their own — so staff fill the gaps with memory, habit, and presence. And every time a shift changes, that knowledge walks out the door.</p>
+        </div>
+        <div class="step-text" id="step2">
+          <div class="step-label">The consequence</div>
+          <h2 class="step-h">Promises get forgotten.<br>Guests notice.</h2>
+          <p class="step-p">When staff spend their time <strong>searching for information instead of being present,</strong> the guest experience suffers. Not because anyone failed — because the system was never built to support them.</p>
+        </div>
+      </div>
+      <div class="step-visual-col">
+        <div class="postit-pile" id="postitPile">
+          <div class="postit postit-1">Early check-in<br>Room 204<br>11am !!!</div>
+          <div class="postit postit-2">Mr Vos — no<br>lactose! Tell<br>kitchen</div>
+          <div class="postit postit-3">Call back<br>Francesca re<br>table 7</div>
+          <div class="postit postit-4">Window seat<br>confirmed?<br>Ask Nic</div>
+          <div class="postit postit-5">Minibar rm 118<br>before checkout<br>tmr</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="scroll-steps" id="scrollSteps"></div>
+</div>
+
+<!-- STATS -->
+<section class="section stats-section" id="s2">
+  <div class="stats-eyebrow reveal">The numbers</div>
+  <div class="stats-grid">
+    <div class="stat-cell reveal d1">
+      <div class="stat-n"><span class="green">44</span><span class="sm">%</span></div>
+      <div class="stat-l">of managers believe staff are aligned. Only 14% of staff agree</div>
+    </div>
+    <div class="stat-cell reveal d2">
+      <div class="stat-n">$<span>2,500</span></div>
+      <div class="stat-l">average cost per communication breakdown in hotel operations</div>
+    </div>
+    <div class="stat-cell reveal d3">
+      <div class="stat-n"><span>47</span><span class="sm">min</span></div>
+      <div class="stat-l">spent per shift by supervisors just finding out what has or hasn't been done</div>
+    </div>
+    <div class="stat-cell reveal d4">
+      <div class="stat-n"><span>68</span><span class="sm">%</span></div>
+      <div class="stat-l">of hotels regularly experience duplicate task dispatch — two people, same job, no visibility</div>
+    </div>
+    <div class="stat-cell reveal d5">
+      <div class="stat-n"><span>34</span><span class="sm">%</span></div>
+      <div class="stat-l">fewer service gaps when hotels implement standardized shift briefings</div>
+    </div>
+  </div>
+</section>
+
+<!-- COST — flows from stats -->
+<section class="section cost-section" id="s3">
+  <h2 class="cost-intro reveal">When the systems fail the staff,<br>the guest pays the price.</h2>
+  <div class="cost-cards" style="grid-template-columns:1fr;max-width:760px">
+    <div class="cost-card reveal d1">
+      <p class="cost-p">When staffspend their shifts <strong>chasing updates, filling in system gaps, and relying on memory</strong> to do a job the tools were supposed to support. They know what a great guest experience looks like — and they want to deliver it. The systems hold them back.</p>
+      <p class="cost-p" style="margin-top:20px">That exhaustion surfaces exactly where it hurts most. <strong>Missed promises. Repeated requests. Managers absorbed in coordination failures</strong> instead of leading their teams. Every gap in the staff's information becomes a gap in service — and every gap in service becomes a cost in loyalty, reputation, and revenue.</p>
+    </div>
+  </div>
+  <p class="cost-connector reveal d2">The guest doesn't see the fragmentation.<br>They feel the result of it.</p>
+</section>
+
+<!-- QUOTE -->
+<section class="section quote-section" id="s4">
+  <div class="quote-inner">
+    <div class="quote-label reveal">What our interviews revealed</div>
+    <blockquote class="reveal d1">"I want to stay <em>continuously aligned</em> across shifts, departments, and guest situations — so I can carry out the right task, at the right time, with the right information, without manually chasing updates, people, or priorities."</blockquote>
+  </div>
+</section>
+
+<!-- HMW -->
+<section class="section hmw-section" id="s5">
+  <div class="hmw-label reveal">Our design question</div>
+  <p class="hmw-q reveal d1">How might we help hospitality staff manage tasks, communication, and the guest experience more efficiently — while preserving the human touch?</p>
+  <div class="hmw-arrow reveal d2">↓</div>
+</section>
+
+<!-- MISE REVEAL -->
+<section class="section mise-section" id="s6">
+  <div class="ring" style="width:400px;height:400px"></div>
+  <div class="ring" style="width:700px;height:700px"></div>
+  <div class="ring" style="width:1000px;height:1000px"></div>
+  <div class="mise-tagline reveal">The answer</div>
+  <div class="mise-big reveal d1">Mise</div>
+  <p class="mise-desc reveal d2">An AI agent that <strong>replaces the Post-its, the memory, and the manual coordination</strong> holding hotel operations together — keeping staff aligned across shifts, departments, and guest situations.</p>
+</section>
+
+<!-- LAYER -->
+<section class="section layer-section" id="s7">
+  <h2 class="layer-title reveal">Not replacing existing systems.<br>The intelligent layer between them and the people who use them.</h2>
+  <div class="layers">
+    <div class="layer layer-existing reveal d1">
+      <div><div class="layer-name">Existing systems</div><div class="layer-sub">PMS · booking · housekeeping · communications</div></div>
+      <div class="layer-detail">Data lives here</div>
+    </div>
+    <div class="connector-line reveal d2">↑↓ reads &amp; writes ↑↓</div>
+    <div class="layer layer-mise reveal d2">
+      <div><div class="layer-name-w">Mise — intelligent layer</div><div class="layer-sub-w">connects · prioritises · routes · remembers across shifts</div></div>
+      <div class="layer-detail-w">Intelligence lives here</div>
+    </div>
+    <div class="connector-line reveal d3">↓ surfaces context ↓</div>
+    <div class="layer layer-people reveal d3">
+      <div><div class="layer-name">Staff &amp; managers</div><div class="layer-sub">right task · right person · right moment · every shift</div></div>
+      <div class="layer-detail">Action happens here</div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES STICKY -->
+<div class="features-wrap" id="featWrap">
+  <div class="features-sticky">
+    <div class="features-left">
+      <div class="feature-item" id="f0">
+        <div class="feature-num">01 — Task management</div>
+        <h2 class="feature-h">Every request,<br>one place.</h2>
+        <p class="feature-p">From any channel. The agent picks it up, classifies it, assigns it, and tracks it. Every task is <strong>connected to a guest</strong> — not just a to-do item.</p>
+        <div class="fdots"><div class="fdot active"></div><div class="fdot"></div><div class="fdot"></div><div class="fdot"></div><div class="fdot"></div></div>
+      </div>
+      <div class="feature-item" id="f1">
+        <div class="feature-num">02 — Guest profile</div>
+        <h2 class="feature-h">The operational<br>brain.</h2>
+        <p class="feature-p">Preferences, history, dietary needs, complaints, promises. Every priority decision flows from <strong>who the guest is</strong> and what they need right now.</p>
+        <div class="fdots"><div class="fdot"></div><div class="fdot active"></div><div class="fdot"></div><div class="fdot"></div><div class="fdot"></div></div>
+      </div>
+      <div class="feature-item" id="f2">
+        <div class="feature-num">03 — Shift handover</div>
+        <h2 class="feature-h">Knowledge that<br>never leaves.</h2>
+        <p class="feature-p">When a shift ends, the next team is automatically briefed. Open tasks, guest situations, promises made. <strong>Nothing is lost</strong> when someone goes home.</p>
+        <div class="fdots"><div class="fdot"></div><div class="fdot"></div><div class="fdot active"></div><div class="fdot"></div><div class="fdot"></div></div>
+      </div>
+      <div class="feature-item" id="f3">
+        <div class="feature-num">04 — Managerial control</div>
+        <h2 class="feature-h">Oversight without<br>the bottleneck.</h2>
+        <p class="feature-p">Live task board, workload visibility, override controls. Managers write plain-language instructions that <strong>shape how the agent thinks</strong> — and it learns from every decision.</p>
+        <div class="fdots"><div class="fdot"></div><div class="fdot"></div><div class="fdot"></div><div class="fdot active"></div><div class="fdot"></div></div>
+      </div>
+      <div class="feature-item" id="f4">
+        <div class="feature-num">05 — Chat</div>
+        <h2 class="feature-h">Ask anything.<br>Get context.</h2>
+        <p class="feature-p">Plain-language access to every guest, task, and team update. No digging through systems — <strong>Mise surfaces what you need</strong>, exactly when you need it.</p>
+        <div class="fdots"><div class="fdot"></div><div class="fdot"></div><div class="fdot"></div><div class="fdot"></div><div class="fdot active"></div></div>
+      </div>
+    </div>
+    <div class="features-right">
+      <div class="iphone17">
+        <div class="iphone17-frame"></div>
+        <div class="iphone17-screen">
+          <div class="dynamic-island"></div>
+
+          <!-- f0: Task management — video -->
+          <div class="feature-media active" id="fm0">
+            <video src="tasks.MP4" autoplay loop muted playsinline></video>
+          </div>
+
+          <!-- f1: Guest profile — video -->
+          <div class="feature-media" id="fm1">
+            <video src="guests.MP4" loop muted playsinline></video>
+          </div>
+
+          <!-- f2: Shift handover — placeholder (swap div for <img src="yourfile.gif"> when ready) -->
+          <div class="feature-media" id="fm2">
+            <div class="fmedia-placeholder">
+              <div class="fmph-bar" style="width:78%"></div>
+              <div class="fmph-bar" style="width:62%"></div>
+              <div class="fmph-bar" style="width:82%"></div>
+              <div class="fmph-bar" style="width:55%"></div>
+              <div class="fmph-bar" style="width:70%"></div>
+              <div class="fmedia-placeholder-label">Video coming soon</div>
+            </div>
+          </div>
+
+          <!-- f3: Managerial control — placeholder (swap div for <img src="yourfile.gif"> when ready) -->
+          <div class="feature-media" id="fm3">
+            <div class="fmedia-placeholder">
+              <div class="fmph-bar" style="width:72%"></div>
+              <div class="fmph-bar" style="width:85%"></div>
+              <div class="fmph-bar" style="width:58%"></div>
+              <div class="fmph-bar" style="width:76%"></div>
+              <div class="fmph-bar" style="width:64%"></div>
+              <div class="fmedia-placeholder-label">Video coming soon</div>
+            </div>
+          </div>
+
+          <!-- f4: Chat — static image only -->
+          <div class="feature-media" id="fm4">
+            <img src="chat.PNG" alt="Chat feature">
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="features-scroll" id="featScroll"></div>
+</div>
+
+<!-- NAME -->
+<section class="section name-section" id="s9">
+  <div class="name-mise reveal">Mise</div>
+  <div class="name-italian reveal d1">mise en place</div>
+  <p class="name-def reveal d2">Everything in its right place<br>before service begins.<br><em>That is the product.</em></p>
+</section>
+
+<!-- SOURCES -->
+<section class="section sources-section" id="s10" style="min-height:auto">
+  <div class="sources-title reveal">Sources</div>
+  <div class="sources-grid">
+    <div class="source-card reveal d1">
+      <div class="source-num"><span style="color:var(--green)">44</span><span class="sm">%</span> vs <span>14</span><span class="sm">%</span></div>
+      <div class="source-desc">Leaders who believe staff are aligned vs. staff who actually feel aligned</div>
+      <a class="source-link" href="https://blog.hotelogix.com/importance-of-communication-in-hotel-industry/" target="_blank">blog.hotelogix.com</a>
+    </div>
+    <div class="source-card reveal d2">
+      <div class="source-num">$<span>2,500</span></div>
+      <div class="source-desc">Average cost per communication breakdown — missed handoffs, disconnected systems, operational rework</div>
+      <a class="source-link" href="https://amworldgroup.com/blog/effective-communications-strategies-in-the-hotel-industry" target="_blank">amworldgroup.com</a>
+    </div>
+    <div class="source-card reveal d3">
+      <div class="source-num"><span>47</span><span class="sm"> min</span></div>
+      <div class="source-desc">Spent per shift by supervisors on status calls — just finding out what is or isn't done</div>
+      <a class="source-link" href="https://oxmaint.com/industries/hospitality/hotel-maintenance-communication" target="_blank">oxmaint.com</a>
+    </div>
+    <div class="source-card reveal d4">
+      <div class="source-num"><span>68</span><span class="sm">%</span></div>
+      <div class="source-desc">Of hotels regularly experience duplicate dispatch — two staff, same task, no shared visibility</div>
+      <a class="source-link" href="https://oxmaint.com/industries/hospitality/hotel-maintenance-communication" target="_blank">oxmaint.com</a>
+    </div>
+    <div class="source-card reveal d5">
+      <div class="source-num"><span>34</span><span class="sm">%</span></div>
+      <div class="source-desc">Fewer service gaps when hotels implement standardized shift briefings</div>
+      <a class="source-link" href="https://amworldgroup.com/blog/effective-communications-strategies-in-the-hotel-industry" target="_blank">amworldgroup.com</a>
+    </div>
+  </div>
+</section>
+
+<!-- END -->
+<section class="section end-section" id="s11">
+  <div class="end-mise reveal">Mise</div>
+  <div class="end-tag reveal d1">Existing systems. Unified intelligence.</div>
+  <div class="end-team reveal d2">Nicholas Vos · Elisa Caridi · Ruben Bähler · Marianna Lonardi · Julie Alme<br>SUPSI × Spark Reply · Designing Intelligent Experiences 2026</div>
+</section>
+
+<script>
+const prog = document.getElementById('prog');
+const allSections = document.querySelectorAll('section[id]');
+const navDots = document.getElementById('navDots');
+const reveals = document.querySelectorAll('.reveal');
+
+allSections.forEach(() => {
+  const d = document.createElement('div');
+  d.className = 'nav-dot';
+  navDots.appendChild(d);
+});
+const dots = document.querySelectorAll('.nav-dot');
+
+allSections.forEach((s, i) => {
+  dots[i].onclick = () => s.scrollIntoView({behavior:'smooth'});
+});
+
+const revObs = new IntersectionObserver(e => {
+  e.forEach(en => { if(en.isIntersecting) en.target.classList.add('visible'); });
+}, {threshold:0.1});
+reveals.forEach(el => revObs.observe(el));
+
+const secObs = new IntersectionObserver(e => {
+  e.forEach(en => {
+    if(en.isIntersecting){
+      const i = Array.from(allSections).indexOf(en.target);
+      if(i>=0) dots.forEach((d,j) => d.classList.toggle('active', j===i));
+    }
+  });
+}, {threshold:0.4});
+allSections.forEach(s => secObs.observe(s));
+
+window.addEventListener('scroll', () => {
+  const sc = window.scrollY;
+  const tot = document.body.scrollHeight - window.innerHeight;
+  prog.style.width = (sc/tot*100)+'%';
+
+  const bgText = document.getElementById('bgText');
+  if(bgText) bgText.style.transform = `translateY(${sc*0.25}px)`;
+
+  // Sticky steps
+  const wrap = document.getElementById('stickyWrap');
+  if(wrap){
+    const wr = wrap.getBoundingClientRect();
+    const steps = document.getElementById('scrollSteps');
+    const stepH = steps.scrollHeight / 3;
+    const scrolled = -wr.top;
+    const idx = Math.min(2, Math.max(0, Math.floor(scrolled / stepH)));
+    [0,1,2].forEach(i => {
+      const el = document.getElementById('step'+i);
+      if(el) el.classList.toggle('active', i===idx);
+    });
+    const pile = document.getElementById('postitPile');
+    if(pile){
+      pile.classList.toggle('scattered', idx===1);
+      pile.classList.toggle('fade-out', idx===2);
+    }
+  }
+
+  // Features
+  const fw = document.getElementById('featWrap');
+  if(fw){
+    const fwr = fw.getBoundingClientRect();
+    const fs = document.getElementById('featScroll');
+    const fH = fs.scrollHeight / 5;
+    const fScrolled = -fwr.top;
+    const fIdx = Math.min(4, Math.max(0, Math.floor(fScrolled / fH)));
+    [0,1,2,3,4].forEach(i => {
+      const el = document.getElementById('f'+i);
+      if(el) el.classList.toggle('active', i===fIdx);
+      const fm = document.getElementById('fm'+i);
+      if(fm){
+        const wasActive = fm.classList.contains('active');
+        fm.classList.toggle('active', i===fIdx);
+        const vid = fm.querySelector('video');
+        if(vid){
+          if(i===fIdx && !wasActive){ vid.currentTime=0; vid.play().catch(()=>{}); }
+          else if(i!==fIdx) vid.pause();
+        }
+      }
+    });
+  }
+}, {passive:true});
+
+document.getElementById('step0').classList.add('active');
+document.getElementById('f0').classList.add('active');
+</script>
+</body>
+</html>

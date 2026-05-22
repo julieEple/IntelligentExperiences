@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mise</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+@font-face{font-family:'PPNeue';src:url('pp-neue-montreal-cufonfonts/ppneuemontreal-thin.otf') format('opentype');font-weight:300;font-style:normal}
+@font-face{font-family:'PPNeue';src:url('pp-neue-montreal-cufonfonts/ppneuemontreal-book.otf') format('opentype');font-weight:400;font-style:normal}
+@font-face{font-family:'PPNeue';src:url('pp-neue-montreal-cufonfonts/ppneuemontreal-medium.otf') format('opentype');font-weight:500;font-style:normal}
+@font-face{font-family:'PPNeue';src:url('pp-neue-montreal-cufonfonts/ppneuemontreal-bold.otf') format('opentype');font-weight:700;font-style:normal}
+:root{--bg:#E5E6E2;--ink:#1A1A18;--muted:#6A6A64;--line:rgba(26,26,24,.12);--green:#7A8B64;--font:'PPNeue','Plus Jakarta Sans',Helvetica,Arial,sans-serif}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--bg)}
+body{font-family:var(--font);color:var(--ink);-webkit-font-smoothing:antialiased}
+
+#stage{position:fixed;inset:0;overflow:hidden}
+
+/* ── SLIDESS ── */
+.slide{position:absolute;inset:0;padding:60px 120px 80px;opacity:0;pointer-events:none}
+.slide.active{opacity:1;pointer-events:auto}
+
+/* ── FOOTER ── */
+#footer{position:fixed;bottom:0;left:0;right:0;height:52px;padding:0 40px;display:flex;align-items:center;justify-content:space-between;z-index:900;background:var(--bg)}
+#footer-mise{font-size:13px;font-weight:500;letter-spacing:.01em;cursor:pointer;transition:opacity .3s}
+#footer-credit{font-size:10px;color:var(--muted);letter-spacing:.05em}
+
+/* ── FLYING MISE (transition animation) ── */
+#flying{position:fixed;pointer-events:none;font-family:var(--font);font-weight:500;color:var(--ink);z-index:999;letter-spacing:-.025em;line-height:1;opacity:0;transform-origin:left bottom}
+
+/* ── TYPOGRAPHY ── */
+.t-display{font-size:80px;font-weight:500;line-height:1.05;letter-spacing:-.03em}
+.t-large{font-size:64px;font-weight:500;line-height:1.1;letter-spacing:-.025em}
+.t-body{font-size:18px;font-weight:400;line-height:1.6;color:var(--muted)}
+.t-label{font-size:14px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.mise-title{font-size:128px;font-weight:500;letter-spacing:-.03em;line-height:1}
+
+/* ── LAYOUT HELPERS ── */
+.v-center{display:flex;flex-direction:column;justify-content:center;height:100%}
+.v-bottom{display:flex;flex-direction:column;justify-content:flex-end;height:100%;padding-bottom:16px}
+.cols3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:40px;margin-top:48px}
+.cols2{display:grid;grid-template-columns:1fr 1fr;gap:48px 80px;margin-top:48px;max-width:680px}
+.cols4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:0 60px;margin-top:40px;width:100%}
+
+/* ── CENTERED CONTENT BOX (S1/S2/S3) ── */
+.content-box{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:1200px;height:620px;display:flex;flex-direction:column;justify-content:space-between}
+
+/* ── S0: COVER ── */
+#s0{padding:60px 200px 80px}
+#s0 .headline h1{font-size:128px;font-weight:500;line-height:1;letter-spacing:-.03em}
+#s0 .cover-row{display:flex;flex-direction:row;align-items:flex-start;justify-content:space-between;width:100%}
+#s0 .headline{flex:0 0 auto}
+#s0 .body-col{max-width:440px}
+
+/* ── S3: CONSEQUENCE ── */
+.col-title{font-size:24px;font-weight:500;margin-bottom:16px;padding-bottom:12px;border-top:1px solid var(--line);padding-top:16px}
+
+/* ── S4: STATS ── */
+.stat-num{font-size:80px;font-weight:300;letter-spacing:-.04em;line-height:1}
+.stat-desc{font-size:18px;font-weight:400;line-height:1.55;color:var(--muted);margin-top:12px;max-width:260px}
+
+/* ── S5: HMW ── */
+#s5{display:flex;align-items:flex-start;justify-content:flex-start;padding:180px 200px 80px}
+#s5 .hmw{max-width:1100px}
+
+/* ── S6: MISE INTRO ── */
+#s6,#s7,#s8{padding:120px 140px 80px}
+#s6 .v-center{justify-content:space-between}
+#s6 .mise-section{display:flex;flex-direction:row;justify-content:space-between;align-items:flex-start;gap:60px}
+#s6 .intro-body{max-width:520px}
+#s6 .tagline{font-size:40px;font-weight:500;color:var(--ink);line-height:1.3;letter-spacing:-.02em;max-width:760px}
+.mise-title-hidden{opacity:0}
+
+/* ── S7: SYSTEM DIAGRAM ── */
+#s7 .v-center{justify-content:space-between}
+#s7 .system-section{display:flex;flex-direction:row;justify-content:space-between;align-items:flex-start;gap:60px}
+.layer-stack{display:flex;flex-direction:column;gap:2px;margin-top:8px}
+.layer{display:grid;grid-template-columns:220px 1fr 180px;align-items:center;gap:24px;padding:16px 20px;background:rgba(26,26,24,.06)}
+.layer.active-layer{background:rgba(26,26,24,.1)}
+.layer-name{font-size:16px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+.layer.active-layer .layer-name{color:var(--ink);font-weight:500}
+.layer-desc{font-size:18px;color:var(--muted);line-height:1.4;text-align:center}
+.layer.active-layer .layer-desc{color:var(--ink)}
+.layer-tag{font-size:16px;color:var(--muted);text-align:right;line-height:1.45}
+
+/* ── S8: FEATURES LIST ── */
+#s8 .feat-list{margin-top:40px}
+.feat-row{display:grid;grid-template-columns:60px 1fr 1fr;align-items:center;padding:20px 0;border-top:1px solid var(--line)}
+.feat-row:last-child{border-bottom:1px solid var(--line)}
+.feat-num{font-size:18px;font-weight:400;color:var(--muted);letter-spacing:.02em}
+.feat-name{font-size:32px;font-weight:400;letter-spacing:-.015em}
+.feat-sub{font-size:32px;font-weight:400;color:var(--muted);text-align:right}
+
+/* ── S9–S13: FEATURE DETAILS ── */
+#s9,#s10,#s11,#s12,#s13{padding:120px 140px 80px}
+#s9 .v-center,#s10 .v-center,#s11 .v-center,#s12 .v-center,#s13 .v-center{justify-content:flex-start;gap:36px}
+#s9 .feat-detail,#s10 .feat-detail,#s11 .feat-detail,#s12 .feat-detail,#s13 .feat-detail{height:auto;flex:1;grid-template-columns:1fr 1fr;align-items:stretch}
+#s9 .feat-detail .left,#s10 .feat-detail .left,#s11 .feat-detail .left,#s12 .feat-detail .left,#s13 .feat-detail .left{justify-content:space-between;padding-bottom:40px}
+.feat-bottom{display:flex;flex-direction:column;gap:16px}
+.feat-detail{display:grid;grid-template-columns:1fr 1fr;gap:80px;height:100%;align-items:center}
+.feat-detail .left{display:flex;flex-direction:column;gap:24px;justify-content:center}
+.feat-num-lg{font-size:64px;font-weight:500;letter-spacing:-.015em;color:var(--ink);line-height:1.1}
+.feat-title-lg{font-size:32px;font-weight:400;letter-spacing:-.01em;line-height:1.4}
+.feat-subtitle{font-size:18px;font-weight:400;color:var(--muted);line-height:1.5;letter-spacing:0}
+.feat-body-lg{font-size:18px;font-weight:400;line-height:1.6;color:var(--muted);max-width:420px}
+/* ── IPHONE FRAME ── */
+.iphone-wrap{position:absolute;top:120px;right:140px;bottom:120px;display:flex;align-items:stretch;pointer-events:none;z-index:2}
+.iphone-frame{aspect-ratio:393/852;background:#1c1c1e;border-radius:50px;position:relative;flex-shrink:0;box-shadow:0 0 0 1.5px #555,0 0 0 3px #1a1a1a,0 0 0 4px #3a3a3a,0 40px 100px rgba(0,0,0,.45)}
+.iphone-notch{position:absolute;top:14px;left:50%;transform:translateX(-50%);width:32%;height:36px;background:#000;border-radius:20px;z-index:10}
+.iphone-screen{position:absolute;inset:8px;border-radius:44px;overflow:hidden;background:#000}
+.iphone-screen img,.iphone-screen video{width:100%;height:100%;object-fit:cover;object-position:top}
+.phone-wrap{display:none}
+.phone{width:210px;height:400px;background:var(--green);border-radius:32px;position:relative;overflow:hidden;box-shadow:0 24px 64px rgba(0,0,0,.18)}
+.phone-bar{position:absolute;top:0;left:0;right:0;height:44px;background:rgba(0,0,0,.15);display:flex;align-items:center;justify-content:space-between;padding:0 14px}
+.phone-time{font-size:11px;color:#fff;font-weight:500}
+.phone-icons{display:flex;gap:6px;align-items:center}
+.phone-icons span{width:12px;height:7px;background:#fff;border-radius:1px;opacity:.8}
+.phone-content{padding:12px;margin-top:44px}
+.chat-bubble{background:rgba(255,255,255,.25);border-radius:10px;padding:8px 10px;margin-bottom:6px;font-size:10px;color:#fff;line-height:1.4}
+.chat-bubble.dark{background:rgba(0,0,0,.2)}
+.chat-actions{display:flex;flex-direction:column;gap:3px;margin-top:8px}
+.chat-action{background:rgba(0,0,0,.15);border-radius:6px;padding:5px 8px;font-size:9.5px;color:rgba(255,255,255,.8);display:flex;align-items:center;gap:4px}
+.chat-action::before{content:"☐";opacity:.6}
+.phone-input{position:absolute;bottom:12px;left:12px;right:12px;height:36px;background:rgba(0,0,0,.2);border-radius:18px;display:flex;align-items:center;padding:0 12px}
+.phone-input span{font-size:10px;color:rgba(255,255,255,.5)}
+.phone-nav{position:absolute;bottom:0;left:0;right:0;height:52px;background:rgba(0,0,0,.25);display:flex;align-items:center;justify-content:space-around;padding-bottom:4px}
+.nav-icon{width:22px;height:22px;border-radius:6px;background:rgba(255,255,255,.2)}
+.nav-icon.active{background:rgba(255,255,255,.5)}
+
+/* ── S8: FEATURES LIST TOP ROW ── */
+#s8 .feat-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
+#s8 .v-center{justify-content:space-between}
+
+/* ── S14: CLOSING ── */
+#s14{display:flex;flex-direction:column;justify-content:space-between;padding:60px 120px 80px}
+#s14 .top{display:flex;flex-direction:column;gap:8px}
+#s14 .closing-label{font-size:14px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+#s14 .bottom{max-width:900px}
+
+/* ── PROGRESS ── */
+#progress{position:fixed;right:28px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:7px;z-index:800}
+.dot{width:4px;height:4px;border-radius:4px;background:rgba(26,26,24,.18);cursor:pointer;transition:all .35s}
+.dot.on{background:var(--ink);height:14px}
+
+
+</style>
+</head>
+<body>
+
+<!-- Flying Mise for logo-grow animation -->
+<div id="flying">Mise</div>
+
+<!-- Fixed footer -->
+<footer id="footer">
+  <span id="footer-mise">Mise</span>
+  <span id="footer-credit">SUPSI × Spark Reply · Designing Intelligent Experiences 2026</span>
+</footer>
+
+<!-- Progress dots -->
+<nav id="progress" aria-label="Slide navigation"></nav>
+
+<div id="stage">
+
+<!-- S0: Cover -->
+<div class="slide active" id="s0">
+  <div class="v-center">
+    <div class="cover-row">
+      <div class="headline"><h1 class="t-display">Hotels run<br>on people,<br>not<br>systems</h1></div>
+      <div class="body-col"><p class="t-body">The existing hotel systems are outdated and not sufficient to keep up with operations. Staff are left to work around them and fill in the gaps. Right now hotels rely heavily on memory, spreadsheets, post-it notes.<br><br>The consequence is a team that is constantly misaligned, spending more time chasing information than delivering the experience guests are paying for.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- S1: Out of sync -->
+<div class="slide" id="s1">
+  <div class="content-box">
+    <h2 class="t-display">Staff, teams, and departments are constantly out of sync</h2>
+    <p class="t-body" style="max-width:480px">Hotels run on multiple disconnected systems — PMS, booking platforms, housekeeping tools, communication apps — each built for a specific function and never designed to share information. A guest preference logged in one system never reaches the staff member who needs it. The systems are not broken. They just do not talk to each other. And nobody built the layer in between.</p>
+  </div>
+</div>
+
+<!-- S2: Memory and paper -->
+<div class="slide" id="s2">
+  <div class="content-box" style="align-items:flex-end">
+    <h2 class="t-display" style="width:100%">Memory and paper is the real operating system</h2>
+    <p class="t-body" style="max-width:480px">Staff are forced to improvise and work around the systems. They fill the gaps themselves — chasing updates, relying on informal coordination, Post-its, and memory to keep requests from falling through. Promises made by one shift are invisible to the next. Guest preferences logged in one system never reach the person who needs them.</p>
+  </div>
+</div>
+
+<!-- S3: The consequence -->
+<div class="slide" id="s3">
+  <div class="content-box">
+    <h2 class="t-display">The consequence</h2>
+    <div class="cols3" style="margin-top:0;width:100%">
+      <div>
+        <div class="col-title">Guests feel it first</div>
+        <p class="t-body">Slow responses, forgotten preferences, a room that wasn't ready. Not dramatic failures — small gaps that add up, and not match with the guests expectations</p>
+      </div>
+      <div>
+        <div class="col-title">Staff carry the weight</div>
+        <p class="t-body">Constant context-switching, filling gaps the systems should fill, and absorbing the stress when something falls through. High cognitive load, high turnover, and less time for the interactions that actually matter.</p>
+      </div>
+      <div>
+        <div class="col-title">Business pays for it</div>
+        <p class="t-body">Every coordination failure has a cost — in comped rooms, repeated work, manager time pulled into small emergencies, and guests who don't come back. None of it shows up on a single dashboard, but it compounds daily.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S4: Stats -->
+<div class="slide" id="s4">
+  <div class="content-box">
+    <h2 class="t-display">The numbers</h2>
+    <div class="cols4">
+      <div><div class="stat-num">44%</div><p class="stat-desc">of managers believe staff are aligned. Only 14% of staff agree.</p></div>
+      <div><div class="stat-num">47<span style="font-size:.55em">min</span></div><p class="stat-desc">spent per shift by supervisors just finding out what has or hasn't been done.</p></div>
+      <div><div class="stat-num">68%</div><p class="stat-desc">of hotels regularly experience duplicate task dispatch — two people, same job, no visibility.</p></div>
+      <div><div class="stat-num">34%</div><p class="stat-desc">fewer service gaps when hotels implement standardised shift briefings.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- S5: HMW — "slide 11" -->
+<div class="slide" id="s5">
+  <div class="hmw">
+    <h2 class="t-large">How might we help staff stay continuously aligned across shifts, departments, and guest situations — so they can carry out the right task, at the right time, with the right information, without manually chasing updates, people, or priorities?</h2>
+  </div>
+</div>
+
+<!-- S6: Mise intro — "slide 12" -->
+<div class="slide" id="s6">
+  <div class="v-center">
+    <div class="mise-section">
+      <div id="s6-mise-title" class="mise-title mise-title-hidden">Mise</div>
+      <div class="intro-body">
+        <p class="t-body">Mise is an AI agent that sits on top of existing hotel systems and acts as an intelligent layer between the systems and the people who use them. It picks up requests, assigns tasks to the right person, maintains memory across shifts, and makes sure nothing is lost when someone goes home.</p>
+        <p class="t-body" style="margin-top:20px">Staff always know what to do next. The team stays aligned. The guest feels the difference.</p>
+      </div>
+    </div>
+    <div id="s6-tagline" class="tagline">Not replacing existing systems.<br>Making them work for the people that use them.</div>
+  </div>
+</div>
+
+<!-- S7: System diagram — "slide 13" -->
+<div class="slide" id="s7">
+  <div class="v-center">
+    <div class="system-section">
+      <div id="s7-mise-title" class="mise-title">Mise</div>
+      <div id="s7-intro" style="max-width:520px">
+        <p class="t-body">Mise is an AI agent that sits on top of existing hotel systems and acts as an intelligent layer between the systems and the people who use them.</p>
+      </div>
+    </div>
+    <div id="s7-layers" class="layer-stack" style="margin-top:0">
+      <div class="layer">
+        <span class="layer-name">Existing systems</span>
+        <span class="layer-desc">PMS · booking · housekeeping · communications</span>
+        <span class="layer-tag">Data lives here</span>
+      </div>
+      <div class="layer active-layer">
+        <span class="layer-name">Mise — intelligent layer</span>
+        <span class="layer-desc">connects · prioritises · routes · remembers across shifts</span>
+        <span class="layer-tag">Intelligence works here</span>
+      </div>
+      <div class="layer">
+        <span class="layer-name">Staff &amp; managers</span>
+        <span class="layer-desc">right task · right person · right moment · every shift</span>
+        <span class="layer-tag">Action happens here</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S8: Features list — "slide 14" -->
+<div class="slide" id="s8">
+  <div class="v-center">
+    <div class="feat-header">
+      <div id="s8-mise-title" class="mise-title">Mise</div>
+      <div class="mise-title">Features</div>
+    </div>
+    <div class="feat-list" id="s8-list">
+      <div class="feat-row"><span class="feat-num">01</span><span class="feat-name">Task manager</span><span class="feat-sub">Every request in one place</span></div>
+      <div class="feat-row"><span class="feat-num">02</span><span class="feat-name">Guest profile</span><span class="feat-sub">The operational brain</span></div>
+      <div class="feat-row"><span class="feat-num">03</span><span class="feat-name">Shift handover</span><span class="feat-sub">Knowledge that never leaves</span></div>
+      <div class="feat-row"><span class="feat-num">04</span><span class="feat-name">Agent instructions</span><span class="feat-sub">Instruct the agent with your expertise</span></div>
+      <div class="feat-row"><span class="feat-num">05</span><span class="feat-name">Chat</span><span class="feat-sub">Draft &amp; approve</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- S9: Task manager -->
+<div class="slide" id="s9">
+  <div class="v-center">
+    <div id="s9-mise-title" class="mise-title">Mise</div>
+    <div class="feat-detail">
+      <div class="left">
+        <span class="feat-num-lg">01 Task manager</span>
+        <div class="feat-bottom">
+          <h2 class="feat-title-lg">Every request in one place</h2>
+          <p class="feat-body-lg">The agent picks up requests from any channel, assigns them to the right person based on role and availability, and tracks them to completion. Staff see a prioritised list, every task tied to a guest, with a reason behind the priority.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="iphone-wrap"><div class="iphone-frame"><div class="iphone-notch"></div><div class="iphone-screen"><video src="assets/task.MP4" autoplay muted loop playsinline></video></div></div></div>
+</div>
+
+<!-- S10: Guest profiles --> 
+<div class="slide" id="s10">
+  <div class="v-center">
+    <div id="s10-mise-title" class="mise-title">Mise</div>
+    <div class="feat-detail">
+      <div class="left">
+        <span class="feat-num-lg">02 Guest profile</span>
+        <div class="feat-bottom">
+          <h2 class="feat-title-lg">The operational brain</h2>
+          <p class="feat-body-lg">Their preferences, dietary needs, complaint history, past stays, promises made. The agent draws on this to contextualise every task and surface the right information at the right moment.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="iphone-wrap"><div class="iphone-frame"><div class="iphone-notch"></div><div class="iphone-screen"><video src="assets/guest.mov" autoplay muted loop playsinline></video></div></div></div>
+</div>
+
+<!-- S11: Shift handover -->
+<div class="slide" id="s11">
+  <div class="v-center">
+    <div id="s11-mise-title" class="mise-title">Mise</div>
+    <div class="feat-detail">
+      <div class="left">
+        <span class="feat-num-lg">03 Shift handover</span>
+        <div class="feat-bottom">
+          <h2 class="feat-title-lg">Knowledge that never leaves</h2>
+          <p class="feat-body-lg">The agent automatically compiles a briefing for the incoming team. Open tasks, guest situations, anything unresolved. The next shift starts fully informed — no verbal handover required.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="iphone-wrap"><div class="iphone-frame"><div class="iphone-notch"></div><div class="iphone-screen"><video src="assets/shiftbrief.mov" autoplay muted loop playsinline></video></div></div></div>
+</div>
+
+<!-- S12: Agent instructions -->
+<div class="slide" id="s12">
+  <div class="v-center">
+    <div id="s12-mise-title" class="mise-title">Mise</div>
+    <div class="feat-detail">
+      <div class="left">
+        <span class="feat-num-lg">04 Agent instructions</span>
+        <div class="feat-bottom">
+          <h2 class="feat-title-lg">Instruct the agent with your expertise</h2>
+          <p class="feat-body-lg">The manager writes plain-language rules that shape how the agent behaves — who handles what, what always escalates, what never gets missed. The agent learns from patterns over time and suggests new rules based on what it observes.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="iphone-wrap"><div class="iphone-frame"><div class="iphone-notch"></div><div class="iphone-screen"><video src="assets/systemp.mov" autoplay muted loop playsinline></video></div></div></div>
+</div>
+
+<!-- S13: Chat -->
+<div class="slide" id="s13">
+  <div class="v-center">
+    <div id="s13-mise-title" class="mise-title">Mise</div>
+    <div class="feat-detail">
+      <div class="left">
+        <span class="feat-num-lg">05 Chat</span>
+        <div class="feat-bottom">
+          <h2 class="feat-title-lg">Draft &amp; approve</h2>
+          <p class="feat-body-lg">Staff can ask the agent anything — it drafts responses, suggests next steps, and routes requests. Managers approve before anything is sent. The agent handles the cognitive load so staff can focus on the guest.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="iphone-wrap"><div class="iphone-frame"><div class="iphone-notch"></div><div class="iphone-screen"><img src="assets/chat.PNG" alt=""></div></div></div>
+</div>
+
+<!-- S14: Closing -->
+<div class="slide" id="s14">
+  <div class="top">
+    <div class="mise-title" style="font-weight:400">Mise</div>
+    <span class="closing-label">mise en place</span>
+  </div>
+  <div class="bottom">
+    <h2 class="t-display">Everything in its right place<br>before service begins.</h2>
+    <p class="t-body" style="margin-top:24px">That is the product.</p>
+  </div>
+</div>
+
+</div><!-- /stage -->
+
+<script>
+const SLIDES = Array.from(document.querySelectorAll('.slide'));
+const N = SLIDES.length;
+let cur = 0, busy = false;
+const DUR = 750;
+const EASE = 'cubic-bezier(.22,1,.36,1)';
+
+// ── Progress dots ──
+const progEl = document.getElementById('progress');
+SLIDES.forEach((_,i)=>{
+  const d = document.createElement('button');
+  d.className='dot'+(i===0?' on':'');
+  d.setAttribute('aria-label','Slide '+(i+1));
+  d.onclick=()=>go(i);
+  progEl.appendChild(d);
+});
+
+function updateDots(){
+  document.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('on',i===cur));
+}
+
+function cleanSlide(s){
+  s.style.transition='';
+  s.style.transform='';
+  s.style.opacity='';
+  s.style.pointerEvents='';
+}
+
+function go(n){
+  if(busy||n===cur||n<0||n>=N) return;
+  const prev=cur, next=n;
+  cur=n; busy=true;
+
+  // S5→S6 forward: logo grow + scroll
+  if(prev===5&&next===6){ transLogoGrow(prev,next); return; }
+
+  // S6–S13 group: Mise title stays fixed (both directions)
+  const mGroup=[6,7,8,9,10,11,12,13];
+  if(mGroup.includes(prev)&&mGroup.includes(next)&&Math.abs(next-prev)===1){
+    transFixedMise(prev,next); return;
+  }
+
+  defaultTrans(prev,next);
+}
+
+// ── Default: vertical scroll ──
+function defaultTrans(prev,next){
+  const dir=next>prev?1:-1;
+  const from=SLIDES[prev], to=SLIDES[next];
+  const t=`transform ${DUR}ms ${EASE}`;
+
+  to.style.transition='none';
+  to.style.transform=`translateY(${dir*100}%)`;
+  to.classList.add('active');
+
+  requestAnimationFrame(()=>{
+    requestAnimationFrame(()=>{
+      to.style.transition=t;
+      to.style.transform='translateY(0)';
+      from.style.transition=t;
+      from.style.transform=`translateY(${-dir*100}%)`;
+    });
+  });
+
+  setTimeout(()=>{
+    from.classList.remove('active');
+    cleanSlide(from);
+    cleanSlide(to);
+    updateDots();
+    busy=false;
+  },DUR+60);
+}
+
+// ── S5→S6: footer "Mise" grows while slides scroll ──
+function transLogoGrow(prev,next){
+  const footer=document.getElementById('footer-mise');
+  const target=document.getElementById('s6-mise-title');
+  const fly=document.getElementById('flying');
+
+  // Measure target at natural position (opacity doesn't affect layout)
+  target.style.opacity='0';
+  const tRect=target.getBoundingClientRect();
+
+  // Pre-position S6 below viewport, add .active immediately so content is visible
+  SLIDES[next].style.transition='none';
+  SLIDES[next].style.transform='translateY(100%)';
+  SLIDES[next].classList.add('active');
+
+  const fRect=footer.getBoundingClientRect();
+  const fSize=13, tSize=parseFloat(getComputedStyle(target).fontSize);
+  fly.style.cssText=`position:fixed;left:${fRect.left}px;top:${fRect.top}px;font-size:${fSize}px;opacity:1;transition:none;font-weight:500;color:var(--ink);pointer-events:none;z-index:999;font-family:var(--font);letter-spacing:-.03em;line-height:1`;
+  footer.style.opacity='0';
+
+  requestAnimationFrame(()=>{
+    requestAnimationFrame(()=>{
+      const t=`${DUR}ms ${EASE}`;
+      SLIDES[next].style.transition=`transform ${t}`;
+      SLIDES[next].style.transform='translateY(0)';
+      SLIDES[prev].style.transition=`transform ${t}`;
+      SLIDES[prev].style.transform='translateY(-100%)';
+      fly.style.transition=`left ${t},top ${t},font-size ${t}`;
+      fly.style.left=tRect.left+'px';
+      fly.style.top=tRect.top+'px';
+      fly.style.fontSize=tSize+'px';
+    });
+  });
+
+  setTimeout(()=>{
+    target.style.opacity='1';
+    fly.style.opacity='0';
+    footer.style.opacity='1';
+    SLIDES[prev].classList.remove('active');
+    cleanSlide(SLIDES[prev]);
+    cleanSlide(SLIDES[next]);
+    updateDots();
+    busy=false;
+  },DUR+60);
+}
+
+// ── S6↔S7↔S8↔S9↔…↔S13: slides scroll, Mise title stays fixed via overlay ──
+const MISE_IDS={6:'s6-mise-title',7:'s7-mise-title',8:'s8-mise-title',9:'s9-mise-title',10:'s10-mise-title',11:'s11-mise-title',12:'s12-mise-title',13:'s13-mise-title'};
+function transFixedMise(prev,next){
+  const dir=next>prev?1:-1;
+  const from=SLIDES[prev], to=SLIDES[next];
+  const fly=document.getElementById('flying');
+  const fromTitle=document.getElementById(MISE_IDS[prev]);
+  const toTitle=document.getElementById(MISE_IDS[next]);
+
+  // Pin overlay at current Mise title position
+  const rect=fromTitle.getBoundingClientRect();
+  fly.style.cssText=`position:fixed;left:${rect.left}px;top:${rect.top}px;font-size:128px;font-weight:500;color:var(--ink);opacity:1;pointer-events:none;z-index:999;font-family:var(--font);letter-spacing:-.03em;line-height:1;transition:none`;
+
+  // Hide both Mise titles so slides can scroll freely underneath
+  fromTitle.style.opacity='0';
+  toTitle.style.opacity='0';
+
+  const t=`transform ${DUR}ms ${EASE}`;
+  to.style.transition='none';
+  to.style.transform=`translateY(${dir*100}%)`;
+  to.classList.add('active');
+
+  requestAnimationFrame(()=>{
+    requestAnimationFrame(()=>{
+      to.style.transition=t;
+      to.style.transform='translateY(0)';
+      from.style.transition=t;
+      from.style.transform=`translateY(${-dir*100}%)`;
+    });
+  });
+
+  setTimeout(()=>{
+    fly.style.opacity='0';
+    fromTitle.style.opacity='1';
+    toTitle.style.opacity='1';
+    from.classList.remove('active');
+    cleanSlide(from);
+    cleanSlide(to);
+    updateDots();
+    busy=false;
+  },DUR+60);
+}
+
+// ── Input handling ──
+let lastWheel=0;
+window.addEventListener('wheel',e=>{
+  e.preventDefault();
+  const now=Date.now();
+  if(Math.abs(e.deltaY)<30) return;
+  if(now-lastWheel<1500) return;
+  lastWheel=now;
+  go(cur+(e.deltaY>0?1:-1));
+},{passive:false});
+
+window.addEventListener('keydown',e=>{
+  if(e.key==='ArrowDown'||e.key==='ArrowRight'||e.key===' ') go(cur+1);
+  if(e.key==='ArrowUp'||e.key==='ArrowLeft') go(cur-1);
+});
+
+let tx=0,ty=0;
+window.addEventListener('touchstart',e=>{tx=e.touches[0].clientX;ty=e.touches[0].clientY;},{passive:true});
+window.addEventListener('touchend',e=>{
+  const dx=e.changedTouches[0].clientX-tx;
+  const dy=e.changedTouches[0].clientY-ty;
+  if(Math.abs(dy)>Math.abs(dx)&&Math.abs(dy)>40) go(cur+(dy<0?1:-1));
+},{passive:true});
+
+document.getElementById('footer-mise').onclick=()=>go(6);
+</script>
+</body>
+</html>
