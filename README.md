@@ -1,1 +1,3 @@
-Run the file Mise/mise-presentation.html
+Run the file mise-presentation.html
+
+Group 2 
